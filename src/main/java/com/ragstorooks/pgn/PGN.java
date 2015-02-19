@@ -23,6 +23,13 @@ public class PGN {
         return this;
     }
 
+    public PGN addMoves(String moves) {
+        if (StringUtils.isBlank(this.moves))
+            return setMoves(moves);
+
+        return setMoves(this.moves + moves);
+    }
+
     public String getMoves() {
         return moves;
     }

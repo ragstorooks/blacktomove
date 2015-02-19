@@ -19,7 +19,7 @@ public class PGNParser {
                 Entry<String, String> metadataEntry = parseMetadataLine(line);
                 pgn.add(metadataEntry.getKey(), metadataEntry.getValue());
             } else
-                pgn.setMoves(line);
+                pgn.addMoves(line);
         }
 
         if (pgn.getMoves() == null)
