@@ -1,5 +1,6 @@
-package com.ragstorooks.pgn;
+package com.ragstorooks.chess.pgn;
 
+import com.ragstorooks.chess.Game;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.ragstorooks.pgn;
+package com.ragstorooks.chess.pgn;
 
 public class PGNParseException extends RuntimeException {
     public PGNParseException(String msg) {

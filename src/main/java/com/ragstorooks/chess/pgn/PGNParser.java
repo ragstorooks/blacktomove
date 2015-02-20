@@ -1,5 +1,6 @@
-package com.ragstorooks.pgn;
+package com.ragstorooks.chess.pgn;
 
+import com.ragstorooks.chess.Game;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.AbstractMap.SimpleEntry;
