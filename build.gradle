@@ -6,7 +6,7 @@ version = '1.0'
 
 repositories {
     maven {
-        url "http://galaxy-nexus.service.test.group:8081/nexus-pro/content/groups/public"
+        mavenCentral()
     }
 }
 

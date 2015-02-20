@@ -9,21 +9,21 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class PGN {
+public class Game {
     private Map<String, String> metadata = new HashMap<String, String>();
     private String moves;
 
-    public PGN add(String key, String value) {
+    public Game add(String key, String value) {
         metadata.put(key, value);
         return this;
     }
 
-    public PGN setMoves(String moves) {
+    public Game setMoves(String moves) {
         this.moves = moves;
         return this;
     }
 
-    public PGN addMoves(String moves) {
+    public Game addMoves(String moves) {
         if (StringUtils.isBlank(this.moves))
             return setMoves(moves);
 
@@ -43,8 +43,8 @@ public class PGN {
         if (obj.getClass() != getClass())
             return false;
 
-        PGN pgn = (PGN) obj;
-        return StringUtils.equals(moves, pgn.moves) && isMetadataEqual(pgn.metadata);
+        Game game = (Game) obj;
+        return StringUtils.equals(moves, game.moves) && isMetadataEqual(game.metadata);
     }
 
     private boolean isMetadataEqual(Map<String, String> otherMetadata) {

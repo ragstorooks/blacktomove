@@ -8,8 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PGNParser {
-    public PGN parsePGN(String pgnText) {
-        PGN pgn = new PGN();
+    public Game parsePGN(String pgnText) {
+        Game game = new Game();
         String[] pgnLines = pgnText.split("[\\r\\n]+");
         for (String line: pgnLines) {
             if (StringUtils.isBlank(line))
@@ -17,15 +17,15 @@ public class PGNParser {
 
             if (line.startsWith("[")) {
                 Entry<String, String> metadataEntry = parseMetadataLine(line);
-                pgn.add(metadataEntry.getKey(), metadataEntry.getValue());
+                game.add(metadataEntry.getKey(), metadataEntry.getValue());
             } else
-                pgn.addMoves(line);
+                game.addMoves(line);
         }
 
-        if (pgn.getMoves() == null)
+        if (game.getMoves() == null)
             throw new PGNParseException("Could not find game moves in PGN: " + pgnText);
 
-        return pgn;
+        return game;
     }
 
     private Entry<String, String> parseMetadataLine(String line) {
