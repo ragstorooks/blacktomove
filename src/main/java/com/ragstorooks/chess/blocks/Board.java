@@ -1,10 +1,7 @@
 package com.ragstorooks.chess.blocks;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
-import java.util.stream.Collectors;
+import java.util.*;
+import java.util.Map.Entry;
 
 public class Board {
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -17,7 +14,8 @@ public class Board {
         @Override
         public int compare(String s1, String s2) {
             if (s1.length() != s2.length() || s1.length() != 2)
-                throw new IllegalArgumentException(s1 + " and " + s2 + " need to be correctly formatted algebraic coordinates");
+                throw new IllegalArgumentException(s1 + " and " + s2 + " need to be correctly formatted algebraic " +
+                        "coordinates");
 
             char s1Rank = s1.charAt(1);
             char s2Rank = s2.charAt(1);
@@ -73,9 +71,7 @@ public class Board {
                         break;
                     case 'P':
                     case 'p':
-                        if (colour.equals(Colour.White))
-                            System.out.println("square = " + square);
-                        piece = new Pawn(colour, square);
+                        piece = new Pawn(colour);
                         break;
                     default:
                         if (!Character.isDigit(c))
@@ -98,9 +94,9 @@ public class Board {
         boolean isCapture = move.contains("x");
         PieceType pieceType = getPieceTypeForMove(move);
 
-        List<Piece> candidatePieces = getPiecesOfType(movingSide, pieceType);
-        for (Piece candidate : candidatePieces) {
-            if (candidate.canMoveTo(destinationSquare, isCapture)) {
+        Map<String, Piece> candidatePieces = getPiecesOfType(movingSide, pieceType);
+        for (Entry<String, Piece> candidate : candidatePieces.entrySet()) {
+            if (candidate.getValue().canMoveTo(candidate.getKey(), destinationSquare, isCapture)) {
                 movePieceToSquare(candidate, destinationSquare);
                 break;
             }
@@ -109,17 +105,19 @@ public class Board {
         return this;
     }
 
-    private void movePieceToSquare(Piece piece, String destinationSquare) {
-        String originSquare = piece.getSquare();
+    private void movePieceToSquare(Entry<String, Piece> piece, String destinationSquare) {
+        String originSquare = piece.getKey();
         board.put(originSquare, null);
-
-        piece.setSquare(destinationSquare);
-        board.put(destinationSquare, piece);
+        board.put(destinationSquare, piece.getValue());
     }
 
-    private List<Piece> getPiecesOfType(Colour movingSide, PieceType pieceType) {
-        return board.values().stream().filter(piece -> piece != null && piece.getColour().equals(movingSide)
-                && piece.getPieceType().equals(pieceType)).collect(Collectors.toList());
+    private Map<String, Piece> getPiecesOfType(Colour movingSide, PieceType pieceType) {
+        Map<String, Piece> candidates = new HashMap<String, Piece>();
+        board.entrySet().stream().filter(square -> square.getValue() != null && square.getValue().getColour().equals
+                (movingSide) && square.getValue().getPieceType().equals(pieceType)).forEach(square -> candidates.put
+                (square.getKey(), square.getValue()));
+
+        return candidates;
     }
 
     private PieceType getPieceTypeForMove(String move) {
@@ -149,7 +147,7 @@ public class Board {
     public String toString() {
         StringBuilder boardPosition = new StringBuilder();
         board.entrySet().stream().forEach(entry -> boardPosition.append(entry.getValue() == null ? ' ' : entry
-                .getValue()).append(entry.getKey().startsWith(FILES[FILES.length-1])? NEW_LINE : ""));
+                .getValue()).append(entry.getKey().startsWith(FILES[FILES.length - 1]) ? NEW_LINE : ""));
         return boardPosition.toString();
     }
 }
