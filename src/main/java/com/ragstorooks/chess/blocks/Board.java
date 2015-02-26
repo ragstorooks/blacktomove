@@ -1,52 +1,81 @@
 package com.ragstorooks.chess.blocks;
 
-import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 public class Board {
     private static final String NEW_LINE = System.getProperty("line.separator");
-    private static final int NUMBER_OF_RANKS_AND_FILES = 8;
-    private static final String FILES = "abcdefgh";
     private static final String FEN_NOT_VALID = "FEN not valid: ";
 
-    private Piece[][] piecesOnTheBoard = new Piece[NUMBER_OF_RANKS_AND_FILES][NUMBER_OF_RANKS_AND_FILES];
+    private static final String[] RANKS = new String[]{"1", "2", "3", "4", "5", "6", "7", "8"};
+    private static final String[] FILES = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
+
+    private SortedMap<String, Piece> board = new TreeMap<String, Piece>(new Comparator<String>() {
+        @Override
+        public int compare(String s1, String s2) {
+            if (s1.length() != s2.length() || s1.length() != 2)
+                throw new IllegalArgumentException(s1 + " and " + s2 + " need to be correctly formatted algebraic coordinates");
+
+            char s1Rank = s1.charAt(1);
+            char s2Rank = s2.charAt(1);
+            if (s1Rank == s2Rank)
+                return s1.charAt(0) - s2.charAt(0);
+
+            return s2Rank - s1Rank;
+        }
+    });
+
+    public Board() {
+        for (String r : RANKS) {
+            for (String f : FILES) {
+                board.put(f + r, null);
+            }
+        }
+    }
 
     public Board(String fenPosition) {
+        this();
+
         String[] rows = fenPosition.split("/");
-        if (rows.length != NUMBER_OF_RANKS_AND_FILES)
+        if (rows.length != RANKS.length)
             throw new IllegalArgumentException(FEN_NOT_VALID + fenPosition);
 
-        for (int i = 0; i < NUMBER_OF_RANKS_AND_FILES; i++) {
-            int boardRankIndex = NUMBER_OF_RANKS_AND_FILES - i;
+        for (int i = 0; i < rows.length; i++) {
             for (int j = 0, fileIndex = 0; j < rows[i].length(); j++, fileIndex++) {
                 char c = rows[i].charAt(j);
-                Colour colour = Character.isUpperCase(c)? Colour.White : Colour.Black;
-                String square = getAlgebraicNotation(j, boardRankIndex);
+                Colour colour = Character.isUpperCase(c) ? Colour.White : Colour.Black;
+                String square = getAlgebraicNotation(fileIndex, RANKS.length - (i + 1));
+                Piece piece = null;
 
                 switch (c) {
                     case 'R':
                     case 'r':
-                        piecesOnTheBoard[boardRankIndex-1][fileIndex] = new Rook(colour, square);
+                        piece = new Rook(colour, square);
                         break;
                     case 'N':
                     case 'n':
-                        piecesOnTheBoard[boardRankIndex-1][fileIndex] = new Knight(colour, square);
+                        piece = new Knight(colour, square);
                         break;
                     case 'B':
                     case 'b':
-                        piecesOnTheBoard[boardRankIndex-1][fileIndex] = new Bishop(colour, square);
+                        piece = new Bishop(colour, square);
                         break;
                     case 'Q':
                     case 'q':
-                        piecesOnTheBoard[boardRankIndex-1][fileIndex] = new Queen(colour, square);
+                        piece = new Queen(colour, square);
                         break;
                     case 'K':
                     case 'k':
-                        piecesOnTheBoard[boardRankIndex-1][fileIndex] = new King(colour, square);
+                        piece = new King(colour, square);
                         break;
                     case 'P':
                     case 'p':
-                        piecesOnTheBoard[boardRankIndex-1][fileIndex] = new Pawn(colour, square);
+                        if (colour.equals(Colour.White))
+                            System.out.println("square = " + square);
+                        piece = new Pawn(colour, square);
                         break;
                     default:
                         if (!Character.isDigit(c))
@@ -55,12 +84,13 @@ public class Board {
                         int numberOfSquaresToSkip = Integer.valueOf("" + c);
                         fileIndex += numberOfSquaresToSkip - 1;
                 }
+                board.put(square, piece);
             }
         }
     }
 
-    private String getAlgebraicNotation(int zeroBasedFile, int zeroBasedRank) {
-        return String.format("%c%d", FILES.charAt(zeroBasedFile), zeroBasedRank);
+    private String getAlgebraicNotation(int file, int rank) {
+        return FILES[file] + RANKS[rank];
     }
 
     public Board makeMove(Colour movingSide, String move) {
@@ -81,30 +111,15 @@ public class Board {
 
     private void movePieceToSquare(Piece piece, String destinationSquare) {
         String originSquare = piece.getSquare();
-        piecesOnTheBoard[rank(originSquare)][file(originSquare)] = null;
+        board.put(originSquare, null);
 
-        // TODO: Have the piece move itself!
         piece.setSquare(destinationSquare);
-        piecesOnTheBoard[rank(destinationSquare)][file(destinationSquare)] = piece;
-    }
-
-    private int file(String square) {
-        return FILES.indexOf(square.charAt(0));
-    }
-
-    private int rank(String square) {
-        return Integer.parseInt(square.substring(1)) - 1;
+        board.put(destinationSquare, piece);
     }
 
     private List<Piece> getPiecesOfType(Colour movingSide, PieceType pieceType) {
-        List<Piece> pieces = new ArrayList<>();
-        for (int i = 0; i < NUMBER_OF_RANKS_AND_FILES; i++)
-            for (int j = 0; j < NUMBER_OF_RANKS_AND_FILES; j++)
-                if (piecesOnTheBoard[i][j] != null && piecesOnTheBoard[i][j].getColour().equals(movingSide) &&
-                        piecesOnTheBoard[i][j].getPieceType().equals(pieceType))
-                    pieces.add(piecesOnTheBoard[i][j]);
-
-        return pieces;
+        return board.values().stream().filter(piece -> piece != null && piece.getColour().equals(movingSide)
+                && piece.getPieceType().equals(pieceType)).collect(Collectors.toList());
     }
 
     private PieceType getPieceTypeForMove(String move) {
@@ -133,15 +148,8 @@ public class Board {
     @Override
     public String toString() {
         StringBuilder boardPosition = new StringBuilder();
-        for (int i = NUMBER_OF_RANKS_AND_FILES - 1; i >= 0; i--) {
-            for (int j = 0; j < NUMBER_OF_RANKS_AND_FILES; j++) {
-                if (piecesOnTheBoard[i][j] == null)
-                    boardPosition.append(' ');
-                else
-                    boardPosition.append(piecesOnTheBoard[i][j]);
-            }
-            boardPosition.append(NEW_LINE);
-        }
+        board.entrySet().stream().forEach(entry -> boardPosition.append(entry.getValue() == null ? ' ' : entry
+                .getValue()).append(entry.getKey().startsWith(FILES[FILES.length-1])? NEW_LINE : ""));
         return boardPosition.toString();
     }
 }
