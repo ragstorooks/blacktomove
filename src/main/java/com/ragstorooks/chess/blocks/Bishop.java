@@ -1,7 +1,7 @@
 package com.ragstorooks.chess.blocks;
 
 public class Bishop extends Piece {
-    public Bishop(Colour colour, String square) {
+    public Bishop(Colour colour) {
         super(PieceType.BISHOP, colour);
     }
 

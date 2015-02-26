@@ -1,7 +1,7 @@
 package com.ragstorooks.chess.blocks;
 
 public class Knight extends Piece {
-    public Knight(Colour colour, String square) {
+    public Knight(Colour colour) {
         super(PieceType.KNIGHT, colour);
     }
 

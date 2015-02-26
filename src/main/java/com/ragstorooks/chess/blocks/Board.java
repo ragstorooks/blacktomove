@@ -1,16 +1,20 @@
 package com.ragstorooks.chess.blocks;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Map.Entry;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Board {
     private static final String NEW_LINE = System.getProperty("line.separator");
     private static final String FEN_NOT_VALID = "FEN not valid: ";
+    private static final int BOARD_SIZE = 8;
 
-    private static final String[] RANKS = new String[]{"1", "2", "3", "4", "5", "6", "7", "8"};
     private static final String[] FILES = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
 
-    private SortedMap<String, Piece> board = new TreeMap<String, Piece>(new Comparator<String>() {
+    private SortedMap<String, Piece> board = new TreeMap<>(new Comparator<String>() {
         @Override
         public int compare(String s1, String s2) {
             if (s1.length() != s2.length() || s1.length() != 2)
@@ -27,7 +31,7 @@ public class Board {
     });
 
     public Board() {
-        for (String r : RANKS) {
+        for (int r = 1; r <= BOARD_SIZE; r++) {
             for (String f : FILES) {
                 board.put(f + r, null);
             }
@@ -38,55 +42,62 @@ public class Board {
         this();
 
         String[] rows = fenPosition.split("/");
-        if (rows.length != RANKS.length)
+        if (rows.length != BOARD_SIZE)
             throw new IllegalArgumentException(FEN_NOT_VALID + fenPosition);
 
-        for (int i = 0; i < rows.length; i++) {
-            for (int j = 0, fileIndex = 0; j < rows[i].length(); j++, fileIndex++) {
-                char c = rows[i].charAt(j);
+        for (int i = 0, rank = BOARD_SIZE - i; i < rows.length; i++, rank--) {
+            String row = reformatFENRowByPopulatingEmptySquares(rows[i]);
+            for (int fileIndex = 0; fileIndex < row.length(); fileIndex++) {
+                char c = row.charAt(fileIndex);
                 Colour colour = Character.isUpperCase(c) ? Colour.White : Colour.Black;
-                String square = getAlgebraicNotation(fileIndex, RANKS.length - (i + 1));
-                Piece piece = null;
+                String square = FILES[fileIndex] + rank;
 
                 switch (c) {
                     case 'R':
                     case 'r':
-                        piece = new Rook(colour, square);
+                        board.put(square, new Rook(colour));
                         break;
                     case 'N':
                     case 'n':
-                        piece = new Knight(colour, square);
+                        board.put(square, new Knight(colour));
                         break;
                     case 'B':
                     case 'b':
-                        piece = new Bishop(colour, square);
+                        board.put(square, new Bishop(colour));
                         break;
                     case 'Q':
                     case 'q':
-                        piece = new Queen(colour, square);
+                        board.put(square, new Queen(colour));
                         break;
                     case 'K':
                     case 'k':
-                        piece = new King(colour, square);
+                        board.put(square, new King(colour));
                         break;
                     case 'P':
                     case 'p':
-                        piece = new Pawn(colour);
+                        board.put(square, new Pawn(colour));
+                        break;
+                    case ' ':
                         break;
                     default:
-                        if (!Character.isDigit(c))
-                            throw new IllegalArgumentException(FEN_NOT_VALID + fenPosition);
-
-                        int numberOfSquaresToSkip = Integer.valueOf("" + c);
-                        fileIndex += numberOfSquaresToSkip - 1;
+                        throw new IllegalArgumentException(FEN_NOT_VALID + fenPosition);
                 }
-                board.put(square, piece);
             }
         }
     }
 
-    private String getAlgebraicNotation(int file, int rank) {
-        return FILES[file] + RANKS[rank];
+    private String reformatFENRowByPopulatingEmptySquares(String row) {
+        StringBuilder result = new StringBuilder();
+        for (int i = 0; i < row.length(); i++) {
+            char c = row.charAt(i);
+            if (Character.isDigit(c)) {
+                int numberOfEmptySquares = Integer.valueOf("" + c);
+                for (int j = 0; j < numberOfEmptySquares; j++)
+                    result.append(' ');
+            } else
+                result.append(c);
+        }
+        return result.toString();
     }
 
     public Board makeMove(Colour movingSide, String move) {
@@ -112,7 +123,7 @@ public class Board {
     }
 
     private Map<String, Piece> getPiecesOfType(Colour movingSide, PieceType pieceType) {
-        Map<String, Piece> candidates = new HashMap<String, Piece>();
+        Map<String, Piece> candidates = new HashMap<>();
         board.entrySet().stream().filter(square -> square.getValue() != null && square.getValue().getColour().equals
                 (movingSide) && square.getValue().getPieceType().equals(pieceType)).forEach(square -> candidates.put
                 (square.getKey(), square.getValue()));
