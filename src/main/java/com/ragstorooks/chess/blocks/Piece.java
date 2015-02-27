@@ -26,5 +26,5 @@ public abstract class Piece {
         return Colour.White.equals(getColour())? whiteNotation : blackNotation;
     }
 
-    public abstract boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture);
+    public abstract boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Square square);
 }

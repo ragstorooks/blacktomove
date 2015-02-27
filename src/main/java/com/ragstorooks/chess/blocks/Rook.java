@@ -6,7 +6,7 @@ public class Rook extends Piece {
     }
 
     @Override
-    public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture) {
+    public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Square square) {
         return false;
     }
 }

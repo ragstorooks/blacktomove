@@ -58,44 +58,4 @@ public class BoardTest {
         // assert
         assertThat(board.toString(), equalTo(expected));
     }
-
-    @Test
-    public void testThatBoardIsReflectedAfterMakingMove1e4() {
-        String expected = "rnbqkbnr" + NEWLINE + "pppppppp" + NEWLINE + EMPTY_ROW + EMPTY_ROW + "    P   " + NEWLINE
-                + EMPTY_ROW + "PPPP PPP" + NEWLINE + "RNBQKBNR" + NEWLINE;
-        Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
-
-        // act
-        board.makeMove(Colour.White, "e4");
-
-        // assert
-        assertThat(board.toString(), equalTo(expected));
-    }
-
-    @Test
-    public void testThatBoardIsReflectedAfterMakingMove1e4c5() {
-        String expected = "rnbqkbnr" + NEWLINE + "pp ppppp" + NEWLINE + EMPTY_ROW + "  p     " + NEWLINE + "    P   "
-                + NEWLINE + EMPTY_ROW + "PPPP PPP" + NEWLINE + "RNBQKBNR" + NEWLINE;
-        Board board = new Board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR");
-
-        // act
-        board.makeMove(Colour.Black, "c5");
-
-        // assert
-        assertThat(board.toString(), equalTo(expected));
-    }
-
-    @Ignore("Not implemented Knight moves yet")
-    @Test
-    public void testThatBoardIsReflectedAfterMakingMove1e4c52Nf3() {
-        String expected = "rnbqkbnr" + NEWLINE + "pp ppppp" + NEWLINE + EMPTY_ROW + "  p     " + NEWLINE + "    P   "
-                + NEWLINE + "     N  " + NEWLINE + "PPPP PPP" + NEWLINE + "RNBQKB R" + NEWLINE;
-        Board board = new Board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR");
-
-        // act
-        board.makeMove(Colour.White, "Nf3");
-
-        // assert
-        assertThat(board.toString(), equalTo(expected));
-    }
 }

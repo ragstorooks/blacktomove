@@ -6,23 +6,30 @@ public class Pawn extends Piece {
     }
 
     @Override
-    public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture) {
+    public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Square square) {
         char destinationFile = destinationSquare.charAt(0);
         char originFile = originSquare.charAt(0);
         int destinationRank = Integer.parseInt(destinationSquare.substring(1));
         int originRank = Integer.parseInt(originSquare.substring(1));
 
-        int numberOfMovingRanks = Colour.White.equals(getColour())? destinationRank - originRank : originRank - destinationRank;
+        int numberOfMovingRanks = Colour.White.equals(getColour()) ? destinationRank - originRank : originRank -
+                destinationRank;
         int numberOfMovingFiles = Math.abs(destinationFile - originFile);
-        if (isCapture) // add check to make sure the destination square is occupied by enemy piece
-            return numberOfMovingFiles == 1 && numberOfMovingRanks == 1;
+        if (isCapture) {
+            Piece pieceAtDestination = square.get(destinationSquare);
+            if (pieceAtDestination == null || getColour().equals(pieceAtDestination.getColour()))
+                throw new IllegalArgumentException();
 
-        if (numberOfMovingFiles != 0 || (numberOfMovingRanks != 1 && numberOfMovingRanks != 2))
-        // add check to make sure the destination square is empty
+            return numberOfMovingFiles == 1 && numberOfMovingRanks == 1;
+        }
+
+        if (numberOfMovingFiles != 0 || (numberOfMovingRanks != 1 && numberOfMovingRanks != 2) && square.get
+                (destinationSquare) == null)
             return false;
 
-        if (numberOfMovingRanks == 2)
-            return true; // add check to make sure the square in between is empty
+        if (numberOfMovingRanks == 2 && square.get(String.format("%c%d", originFile, ((originRank + destinationRank)
+                / 2))) == null)
+            return true;
 
         return true;
     }

@@ -1,37 +1,62 @@
 package com.ragstorooks.chess;
 
+import com.ragstorooks.chess.blocks.Board;
+import com.ragstorooks.chess.blocks.Piece;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
 public class Game {
-    private Map<String, String> metadata = new HashMap<String, String>();
-    private String moves;
+    private Map<String, String> metadata = new HashMap<>();
+    private List<Move> moves = new LinkedList<>();
+    private Board board;
 
-    public Game add(String key, String value) {
+    public Game() {
+        this(new Board());
+    }
+
+    public Game(Board board) {
+        this.board = board;
+    }
+
+    public Game addMeta(String key, String value) {
         metadata.put(key, value);
         return this;
     }
 
-    public Game setMoves(String moves) {
-        this.moves = moves;
-        return this;
+    public void makeMove(Move move) {
+        boolean isValidMove = false;
+
+        Map<String, Piece> candidatePieces = board.getPiecesOfType(move.getMover(), move.getPieceType());
+        for (Entry<String, Piece> candidate : candidatePieces.entrySet()) {
+            String square = candidate.getKey();
+            Piece piece = candidate.getValue();
+
+            if (move.getSourceHint() != null && !square.contains(move.getSourceHint()))
+                continue;
+
+            if (piece.canMoveTo(square, move.getDestination(), move.isCapture(), square1 -> board.get(square1))) {
+                board.movePieceToSquare(candidate, move.getDestination());
+                isValidMove = true;
+                break;
+            }
+        }
+
+        if (!isValidMove)
+            throw new IllegalArgumentException("Invalid move: " + move);
+
+        moves.add(move);
     }
 
-    public Game addMoves(String moves) {
-        if (StringUtils.isBlank(this.moves))
-            return setMoves(moves);
-
-        return setMoves(this.moves + moves);
-    }
-
-    public String getMoves() {
-        return moves;
+    public String getCurrentBoardPosition() {
+        return board.toString();
     }
 
     @Override
@@ -44,7 +69,7 @@ public class Game {
             return false;
 
         Game game = (Game) obj;
-        return StringUtils.equals(moves, game.moves) && isMetadataEqual(game.metadata);
+        return CollectionUtils.isEqualCollection(moves, game.moves) && isMetadataEqual(game.metadata);
     }
 
     private boolean isMetadataEqual(Map<String, String> otherMetadata) {
