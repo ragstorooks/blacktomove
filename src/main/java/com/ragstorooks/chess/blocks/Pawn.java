@@ -18,18 +18,23 @@ public class Pawn extends Piece {
         if (isCapture) {
             Piece pieceAtDestination = square.get(destinationSquare);
             if (pieceAtDestination == null || getColour().equals(pieceAtDestination.getColour()))
-                throw new IllegalArgumentException();
+                return false;
 
             return numberOfMovingFiles == 1 && numberOfMovingRanks == 1;
         }
 
-        if (numberOfMovingFiles != 0 || (numberOfMovingRanks != 1 && numberOfMovingRanks != 2) && square.get
-                (destinationSquare) == null)
+        if (numberOfMovingFiles != 0 || (numberOfMovingRanks != 1 && numberOfMovingRanks != 2))
             return false;
 
-        if (numberOfMovingRanks == 2 && square.get(String.format("%c%d", originFile, ((originRank + destinationRank)
-                / 2))) == null)
-            return true;
+        if (numberOfMovingRanks == 2) {
+            if ((Colour.White.equals(getColour()) && originRank != 2) || (Colour.Black.equals(getColour()) && originRank != 7))
+                return false;
+            if (square.get(String.format("%c%d", originFile, ((originRank + destinationRank) / 2))) != null)
+                return false;
+        }
+
+        if (square.get(destinationSquare) != null)
+            return false;
 
         return true;
     }
