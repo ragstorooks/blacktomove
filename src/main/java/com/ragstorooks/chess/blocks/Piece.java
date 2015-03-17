@@ -38,8 +38,8 @@ public abstract class Piece {
                 isNotCaptureAndDestinationNotEmpty(isCapture, position.get(destinationSquare)))
             return false;
 
-        return canMoveTo(originRank, originFile, destinationRank, destinationFile, numberOfMovingRanks,
-                numberOfMovingFiles, isCapture, position);
+        return canMoveTo(new PieceMoveDetails(originRank, originFile, destinationRank, destinationFile, numberOfMovingRanks,
+                numberOfMovingFiles, isCapture), position);
     }
 
     protected boolean isNotCaptureAndDestinationNotEmpty(boolean isCapture, Piece pieceAtDestination) {
@@ -58,6 +58,5 @@ public abstract class Piece {
         return Math.abs(destinationRank - originRank);
     }
 
-    protected abstract boolean canMoveTo(int originRank, char originFile, int destinationRank, int destinationFile, int
-            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Position position);
+    protected abstract boolean canMoveTo(PieceMoveDetails pieceMoveDetails, Position position);
 }

@@ -6,9 +6,8 @@ public class Knight extends Piece {
     }
 
     @Override
-    protected boolean canMoveTo(int originRank, char originFile, int destinationRank, int destinationFile, int
-            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Position position) {
-        if (numberOfMovingFiles + numberOfMovingRanks == 3)
+    protected boolean canMoveTo(PieceMoveDetails pieceMoveDetails, Position position) {
+        if (pieceMoveDetails.getNumberOfMovingFiles() + pieceMoveDetails.getNumberOfMovingRanks() == 3)
             return true;
 
         return false;

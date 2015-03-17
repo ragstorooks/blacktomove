@@ -9,8 +9,7 @@ public class King extends Piece {
     }
 
     @Override
-    protected boolean canMoveTo(int originRank, char originFile, int destinationRank, int destinationFile, int
-            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Position position) {
+    protected boolean canMoveTo(PieceMoveDetails pieceMoveDetails, Position position) {
         return false;
     }
 
