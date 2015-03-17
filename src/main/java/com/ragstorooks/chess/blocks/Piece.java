@@ -25,7 +25,7 @@ public abstract class Piece {
         return notation;
     }
 
-    public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Square square) {
+    public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Position position) {
         char destinationFile = destinationSquare.charAt(0);
         char originFile = originSquare.charAt(0);
         int destinationRank = Integer.parseInt(destinationSquare.substring(1));
@@ -34,12 +34,12 @@ public abstract class Piece {
         int numberOfMovingRanks = getNumberOfMovingRanks(originRank, destinationRank);
         int numberOfMovingFiles = getNumberOfMovingFiles(originFile, destinationFile);
 
-        if (isCaptureAndOppositionPieceNotAtDestination(isCapture, square.get(destinationSquare)) ||
-                isNotCaptureAndDestinationNotEmpty(isCapture, square.get(destinationSquare)))
+        if (isCaptureAndOppositionPieceNotAtDestination(isCapture, position.get(destinationSquare)) ||
+                isNotCaptureAndDestinationNotEmpty(isCapture, position.get(destinationSquare)))
             return false;
 
         return canMoveTo(originRank, originFile, destinationRank, destinationFile, numberOfMovingRanks,
-                numberOfMovingFiles, isCapture, square);
+                numberOfMovingFiles, isCapture, position);
     }
 
     protected boolean isNotCaptureAndDestinationNotEmpty(boolean isCapture, Piece pieceAtDestination) {
@@ -59,5 +59,5 @@ public abstract class Piece {
     }
 
     protected abstract boolean canMoveTo(int originRank, char originFile, int destinationRank, int destinationFile, int
-            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Square square);
+            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Position position);
 }

@@ -1,6 +1,6 @@
 package com.ragstorooks.chess.blocks;
 
 @FunctionalInterface
-public interface Square {
+public interface Position {
     Piece get(String square);
 }

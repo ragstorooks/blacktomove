@@ -36,13 +36,13 @@ public class Game {
 
         Map<String, Piece> candidatePieces = board.getPiecesOfType(move.getMover(), move.getPieceType());
         for (Entry<String, Piece> candidate : candidatePieces.entrySet()) {
-            String square = candidate.getKey();
+            String originSquare = candidate.getKey();
             Piece piece = candidate.getValue();
 
-            if (move.getSourceHint() != null && !square.contains(move.getSourceHint()))
+            if (move.getSourceHint() != null && !originSquare.contains(move.getSourceHint()))
                 continue;
 
-            if (piece.canMoveTo(square, move.getDestination(), move.isCapture(), square1 -> board.get(square1))) {
+            if (piece.canMoveTo(originSquare, move.getDestination(), move.isCapture(), square -> board.get(square))) {
                 board.movePieceToSquare(candidate, move.getDestination());
                 isValidMove = true;
                 break;

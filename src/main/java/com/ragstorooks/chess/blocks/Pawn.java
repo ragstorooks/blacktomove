@@ -7,7 +7,7 @@ public class Pawn extends Piece {
 
     @Override
     protected boolean canMoveTo(int originRank, char originFile, int destinationRank, int destinationFile, int
-            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Square square) {
+            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Position position) {
         if (isCapture) {
             return numberOfMovingFiles == 1 && numberOfMovingRanks == 1;
         }
@@ -19,7 +19,7 @@ public class Pawn extends Piece {
             if ((Colour.White.equals(getColour()) && originRank != 2) || (Colour.Black.equals(getColour()) &&
                     originRank != 7))
                 return false;
-            if (square.get(String.format("%c%d", originFile, ((originRank + destinationRank) / 2))) != null)
+            if (position.get(String.format("%c%d", originFile, ((originRank + destinationRank) / 2))) != null)
                 return false;
         }
 
