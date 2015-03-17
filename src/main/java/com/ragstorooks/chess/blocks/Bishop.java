@@ -6,7 +6,8 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Square square) {
+    protected boolean canMoveTo(int originRank, char originFile, int destinationRank, int destinationFile, int
+            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Square square) {
         return false;
     }
 }

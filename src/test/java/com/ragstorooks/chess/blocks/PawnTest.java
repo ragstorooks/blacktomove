@@ -11,7 +11,7 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
+        // act & assert
         assertTrue(pawn.canMoveTo("a2", "a3", false, square -> null));
     }
 
@@ -20,7 +20,7 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.Black);
 
-        // act
+        // act & assert
         assertTrue(pawn.canMoveTo("a3", "a2", false, square -> null));
     }
 
@@ -29,8 +29,8 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
-        assertFalse(pawn.canMoveTo("a2", "b3", false, null));
+        // act & assert
+        assertFalse(pawn.canMoveTo("a2", "b3", false, square -> null));
     }
 
     @Test
@@ -38,8 +38,8 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
-        assertFalse(pawn.canMoveTo("a3", "a2", false, null));
+        // act & assert
+        assertFalse(pawn.canMoveTo("a3", "a2", false, square -> null));
     }
 
     @Test
@@ -47,8 +47,8 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.Black);
 
-        // act
-        assertFalse(pawn.canMoveTo("a2", "a3", false, null));
+        // act & assert
+        assertFalse(pawn.canMoveTo("a2", "a3", false, square -> null));
     }
 
     @Test
@@ -56,7 +56,7 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
+        // act & assert
         assertTrue(pawn.canMoveTo("a2", "a4", false, square -> null));
     }
 
@@ -65,7 +65,7 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.Black);
 
-        // act
+        // act & assert
         assertTrue(pawn.canMoveTo("a7", "a5", false, square -> null));
     }
 
@@ -74,8 +74,8 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
-        assertFalse(pawn.canMoveTo("a4", "a6", false, null));
+        // act & assert
+        assertFalse(pawn.canMoveTo("a4", "a6", false, square -> null));
     }
 
     @Test
@@ -83,8 +83,8 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.Black);
 
-        // act
-        assertFalse(pawn.canMoveTo("a5", "a3", false, null));
+        // act & assert
+        assertFalse(pawn.canMoveTo("a5", "a3", false, square -> null));
     }
 
     @Test
@@ -92,8 +92,8 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
-        assertFalse(pawn.canMoveTo("a2", "a5", false, null));
+        // act & assert
+        assertFalse(pawn.canMoveTo("a2", "a5", false, square -> null));
     }
 
     @Test
@@ -101,7 +101,7 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
+        // act & assert
         assertTrue(pawn.canMoveTo("a2", "b3", true, square -> new Pawn(Colour.Black)));
     }
 
@@ -110,7 +110,7 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
+        // act & assert
         assertFalse(pawn.canMoveTo("a2", "b3", true, square -> new Pawn(Colour.White)));
     }
 
@@ -119,7 +119,7 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
+        // act & assert
         assertFalse(pawn.canMoveTo("a2", "c3", true, square -> new Pawn(Colour.Black)));
     }
 
@@ -128,7 +128,7 @@ public class PawnTest {
         // setup
         Piece pawn = new Pawn(Colour.White);
 
-        // act
+        // act & assert
         assertFalse(pawn.canMoveTo("a2", "b4", true, square -> new Pawn(Colour.Black)));
     }
 

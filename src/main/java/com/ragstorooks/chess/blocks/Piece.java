@@ -25,5 +25,39 @@ public abstract class Piece {
         return notation;
     }
 
-    public abstract boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Square square);
+    public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Square square) {
+        char destinationFile = destinationSquare.charAt(0);
+        char originFile = originSquare.charAt(0);
+        int destinationRank = Integer.parseInt(destinationSquare.substring(1));
+        int originRank = Integer.parseInt(originSquare.substring(1));
+
+        int numberOfMovingRanks = getNumberOfMovingRanks(originRank, destinationRank);
+        int numberOfMovingFiles = getNumberOfMovingFiles(originFile, destinationFile);
+
+        if (isCaptureAndOppositionPieceNotAtDestination(isCapture, square.get(destinationSquare)) ||
+                isNotCaptureAndDestinationNotEmpty(isCapture, square.get(destinationSquare)))
+            return false;
+
+        return canMoveTo(originRank, originFile, destinationRank, destinationFile, numberOfMovingRanks,
+                numberOfMovingFiles, isCapture, square);
+    }
+
+    protected boolean isNotCaptureAndDestinationNotEmpty(boolean isCapture, Piece pieceAtDestination) {
+        return !isCapture && pieceAtDestination != null;
+    }
+
+    protected boolean isCaptureAndOppositionPieceNotAtDestination(boolean isCapture, Piece pieceAtDestination) {
+        return isCapture && (pieceAtDestination == null || getColour().equals(pieceAtDestination.getColour()));
+    }
+
+    protected int getNumberOfMovingFiles(char originFile, char destinationFile) {
+        return Math.abs(destinationFile - originFile);
+    }
+
+    protected int getNumberOfMovingRanks(int originRank, int destinationRank) {
+        return Math.abs(destinationRank - originRank);
+    }
+
+    protected abstract boolean canMoveTo(int originRank, char originFile, int destinationRank, int destinationFile, int
+            numberOfMovingRanks, int numberOfMovingFiles, boolean isCapture, Square square);
 }
