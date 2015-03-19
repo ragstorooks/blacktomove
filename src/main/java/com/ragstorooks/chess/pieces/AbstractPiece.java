@@ -1,11 +1,14 @@
-package com.ragstorooks.chess.blocks;
+package com.ragstorooks.chess.pieces;
 
-public abstract class Piece {
+import com.ragstorooks.chess.blocks.Colour;
+import com.ragstorooks.chess.blocks.Position;
+
+public abstract class AbstractPiece {
     private PieceType pieceType;
     private String notation;
     private Colour colour;
 
-    protected Piece(PieceType pieceType, Colour colour) {
+    protected AbstractPiece(PieceType pieceType, Colour colour) {
         this.pieceType = pieceType;
         this.colour = colour;
         this.notation = Colour.White.equals(colour) ? pieceType.getNotation().toUpperCase() : pieceType.getNotation()
@@ -26,6 +29,9 @@ public abstract class Piece {
     }
 
     public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Position position) {
+        if (originSquare.equals(destinationSquare))
+            return false;
+
         char destinationFile = destinationSquare.charAt(0);
         char originFile = originSquare.charAt(0);
         int destinationRank = Integer.parseInt(destinationSquare.substring(1));
@@ -42,11 +48,11 @@ public abstract class Piece {
                 numberOfMovingFiles, isCapture), position);
     }
 
-    protected boolean isNotCaptureAndDestinationNotEmpty(boolean isCapture, Piece pieceAtDestination) {
+    protected boolean isNotCaptureAndDestinationNotEmpty(boolean isCapture, AbstractPiece pieceAtDestination) {
         return !isCapture && pieceAtDestination != null;
     }
 
-    protected boolean isCaptureAndOppositionPieceNotAtDestination(boolean isCapture, Piece pieceAtDestination) {
+    protected boolean isCaptureAndOppositionPieceNotAtDestination(boolean isCapture, AbstractPiece pieceAtDestination) {
         return isCapture && (pieceAtDestination == null || getColour().equals(pieceAtDestination.getColour()));
     }
 

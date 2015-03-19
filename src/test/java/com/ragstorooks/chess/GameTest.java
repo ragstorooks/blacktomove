@@ -2,7 +2,8 @@ package com.ragstorooks.chess;
 
 import com.ragstorooks.chess.blocks.Board;
 import com.ragstorooks.chess.blocks.Colour;
-import com.ragstorooks.chess.blocks.PieceType;
+import com.ragstorooks.chess.moves.BasicMove;
+import com.ragstorooks.chess.pieces.PieceType;
 import org.junit.Ignore;
 import org.junit.Test;
 
@@ -20,7 +21,7 @@ public class GameTest {
         Game game = new Game(new Board());
 
         // act
-        game.makeMove(new Move(Colour.White, PieceType.PAWN, "e4", false, null));
+        game.makeMove(new BasicMove(Colour.White, PieceType.PAWN, "e4", false, null));
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo(expected));
@@ -33,7 +34,7 @@ public class GameTest {
         Game game = new Game(new Board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR"));
 
         // act
-        game.makeMove(new Move(Colour.Black, PieceType.PAWN, "c5", false, null));
+        game.makeMove(new BasicMove(Colour.Black, PieceType.PAWN, "c5", false, null));
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo(expected));
@@ -46,7 +47,7 @@ public class GameTest {
         Game game = new Game(new Board("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR"));
 
         // act
-        game.makeMove(new Move(Colour.White, PieceType.KNIGHT, "f3", false, null));
+        game.makeMove(new BasicMove(Colour.White, PieceType.KNIGHT, "f3", false, null));
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo(expected));
@@ -60,7 +61,7 @@ public class GameTest {
         Game game = new Game(new Board("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R"));
 
         // act
-        game.makeMove(new Move(Colour.Black, PieceType.KNIGHT, "c6", false, null));
+        game.makeMove(new BasicMove(Colour.Black, PieceType.KNIGHT, "c6", false, null));
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo(expected));
@@ -74,7 +75,7 @@ public class GameTest {
         Game game = new Game(new Board("r1bqkbnr/pp1ppppp/2n5/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R"));
 
         // act
-        game.makeMove(new Move(Colour.White, PieceType.PAWN, "d4", false, null));
+        game.makeMove(new BasicMove(Colour.White, PieceType.PAWN, "d4", false, null));
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo(expected));
@@ -88,7 +89,7 @@ public class GameTest {
         Game game = new Game(new Board("r1bqkbnr/pp1ppppp/2n5/2p5/3PP3/5N2/PPP2PPP/RNBQKB1R"));
 
         // act
-        game.makeMove(new Move(Colour.Black, PieceType.PAWN, "d4", true, "c"));
+        game.makeMove(new BasicMove(Colour.Black, PieceType.PAWN, "d4", true, "c"));
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo(expected));
@@ -102,7 +103,7 @@ public class GameTest {
         Game game = new Game(new Board("r1bqkbnr/pp1ppppp/2n5/8/3pP3/5N2/PPP2PPP/RNBQKB1R"));
 
         // act
-        game.makeMove(new Move(Colour.White, PieceType.KNIGHT, "d4", true, null));
+        game.makeMove(new BasicMove(Colour.White, PieceType.KNIGHT, "d4", true, null));
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo(expected));
@@ -117,7 +118,7 @@ public class GameTest {
         Game game = new Game(new Board("rnbqkbnr/pppp1ppp/8/4n3/2B1P3/8/PPPP1PPP/RNBQK1NR"));
 
         // act
-        game.makeMove(new Move(Colour.White, PieceType.BISHOP, "c4", false, null));
+        game.makeMove(new BasicMove(Colour.White, PieceType.BISHOP, "c4", false, null));
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo(expected));

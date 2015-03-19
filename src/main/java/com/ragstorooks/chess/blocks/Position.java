@@ -1,6 +1,8 @@
 package com.ragstorooks.chess.blocks;
 
+import com.ragstorooks.chess.pieces.AbstractPiece;
+
 @FunctionalInterface
 public interface Position {
-    Piece get(String square);
+    AbstractPiece get(String square);
 }

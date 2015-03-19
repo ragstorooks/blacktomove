@@ -1,7 +1,8 @@
 package com.ragstorooks.chess;
 
 import com.ragstorooks.chess.blocks.Board;
-import com.ragstorooks.chess.blocks.Piece;
+import com.ragstorooks.chess.moves.BasicMove;
+import com.ragstorooks.chess.pieces.AbstractPiece;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -15,7 +16,7 @@ import java.util.Map.Entry;
 
 public class Game {
     private Map<String, String> metadata = new HashMap<>();
-    private List<Move> moves = new LinkedList<>();
+    private List<BasicMove> moves = new LinkedList<>();
     private Board board;
 
     public Game() {
@@ -31,13 +32,13 @@ public class Game {
         return this;
     }
 
-    public void makeMove(Move move) {
+    public void makeMove(BasicMove move) {
         boolean isValidMove = false;
 
-        Map<String, Piece> candidatePieces = board.getPiecesOfType(move.getMover(), move.getPieceType());
-        for (Entry<String, Piece> candidate : candidatePieces.entrySet()) {
+        Map<String, AbstractPiece> candidatePieces = board.getPiecesOfType(move.getMover(), move.getPieceType());
+        for (Entry<String, AbstractPiece> candidate : candidatePieces.entrySet()) {
             String originSquare = candidate.getKey();
-            Piece piece = candidate.getValue();
+            AbstractPiece piece = candidate.getValue();
 
             if (move.getSourceHint() != null && !originSquare.contains(move.getSourceHint()))
                 continue;

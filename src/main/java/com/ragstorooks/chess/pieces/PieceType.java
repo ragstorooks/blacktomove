@@ -1,4 +1,4 @@
-package com.ragstorooks.chess.blocks;
+package com.ragstorooks.chess.pieces;
 
 public enum PieceType {
     PAWN("P"),

@@ -1,4 +1,4 @@
-package com.ragstorooks.chess.blocks;
+package com.ragstorooks.chess.pieces;
 
 class PieceMoveDetails {
     private int originRank;

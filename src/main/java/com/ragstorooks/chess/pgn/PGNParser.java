@@ -1,10 +1,9 @@
 package com.ragstorooks.chess.pgn;
 
 import com.ragstorooks.chess.Game;
-import com.ragstorooks.chess.Move;
-import com.ragstorooks.chess.blocks.Board;
+import com.ragstorooks.chess.moves.BasicMove;
 import com.ragstorooks.chess.blocks.Colour;
-import com.ragstorooks.chess.blocks.PieceType;
+import com.ragstorooks.chess.pieces.PieceType;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -36,14 +35,18 @@ public class PGNParser {
         Colour mover = Colour.White;
         String[] movesText = pgn.split("[0-9]+\\.");
         for (String moveText : movesText) {
-            Move move = new Move(mover, getPieceTypeForMove(moveText), moveText.substring(moveText.length() - 2),
+            BasicMove move = new BasicMove(mover, getPieceTypeForMove(moveText), moveText.substring(moveText.length() - 2),
                     moveText.contains("x"), getSourceHintForMove(moveText));
             game.makeMove(move);
 
-            mover = mover.equals(Colour.White) ? Colour.Black : Colour.White;
+            mover = flipMover(mover);
         }
 
         return game;
+    }
+
+    private Colour flipMover(Colour mover) {
+        return mover.equals(Colour.White) ? Colour.Black : Colour.White;
     }
 
     private String getSourceHintForMove(String moveText) {
@@ -67,8 +70,6 @@ public class PGNParser {
                 return PieceType.QUEEN;
             case 'K':
                 return PieceType.KING;
-            case 'P':
-                return PieceType.PAWN;
             default:
                 throw new IllegalArgumentException("Unknown move: " + move);
         }

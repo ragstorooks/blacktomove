@@ -1,6 +1,9 @@
-package com.ragstorooks.chess.blocks;
+package com.ragstorooks.chess.pieces;
 
-public class Knight extends Piece {
+import com.ragstorooks.chess.blocks.Colour;
+import com.ragstorooks.chess.blocks.Position;
+
+public class Knight extends AbstractPiece {
     public Knight(Colour colour) {
         super(PieceType.KNIGHT, colour);
     }

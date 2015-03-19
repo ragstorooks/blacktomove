@@ -1,6 +1,9 @@
-package com.ragstorooks.chess.blocks;
+package com.ragstorooks.chess.pieces;
 
-public class Pawn extends Piece {
+import com.ragstorooks.chess.blocks.Colour;
+import com.ragstorooks.chess.blocks.Position;
+
+public class Pawn extends AbstractPiece {
     public Pawn(Colour colour) {
         super(PieceType.PAWN, colour);
     }

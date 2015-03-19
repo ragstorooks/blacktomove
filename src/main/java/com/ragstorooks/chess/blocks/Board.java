@@ -1,5 +1,7 @@
 package com.ragstorooks.chess.blocks;
 
+import com.ragstorooks.chess.pieces.*;
+
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
@@ -16,7 +18,7 @@ public class Board {
 
     private static final String[] FILES = new String[]{"a", "b", "c", "d", "e", "f", "g", "h"};
 
-    private SortedMap<String, Piece> board = new TreeMap<>(new Comparator<String>() {
+    private SortedMap<String, AbstractPiece> board = new TreeMap<>(new Comparator<String>() {
         @Override
         public int compare(String s1, String s2) {
             if (s1.length() != s2.length() || s1.length() != 2)
@@ -92,7 +94,7 @@ public class Board {
         }
     }
 
-    public Piece get(String square) {
+    public AbstractPiece get(String square) {
         return board.get(square);
     }
 
@@ -110,14 +112,14 @@ public class Board {
         return result.toString();
     }
 
-    public void movePieceToSquare(Entry<String, Piece> piece, String destinationSquare) {
+    public void movePieceToSquare(Entry<String, AbstractPiece> piece, String destinationSquare) {
         String originSquare = piece.getKey();
         board.put(originSquare, null);
         board.put(destinationSquare, piece.getValue());
     }
 
-    public Map<String, Piece> getPiecesOfType(Colour movingSide, PieceType pieceType) {
-        Map<String, Piece> candidates = new HashMap<>();
+    public Map<String, AbstractPiece> getPiecesOfType(Colour movingSide, PieceType pieceType) {
+        Map<String, AbstractPiece> candidates = new HashMap<>();
         board.entrySet().stream().filter(square -> square.getValue() != null && square.getValue().getColour().equals
                 (movingSide) && square.getValue().getPieceType().equals(pieceType)).forEach(square -> candidates.put
                 (square.getKey(), square.getValue()));
