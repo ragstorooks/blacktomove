@@ -8,13 +8,15 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class MoveFactoryTest {
+    private MoveFactory moveFactory = new MoveFactory();
+
     @Test
     public void shouldCreatePawnMove() {
         // setup
         Move expectedMove = new BasicMove(Colour.White, PieceType.PAWN, "h3", false, null);
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "h3");
+        Move move = moveFactory.createMove(Colour.White, "h3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -23,10 +25,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreatePawnMoveForCapture() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.PAWN, "h3", false, "g");
+        Move expectedMove = new BasicMove(Colour.White, PieceType.PAWN, "h3", true, "g");
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "gxh3");
+        Move move = moveFactory.createMove(Colour.White, "gxh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -35,10 +37,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateRookMove() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.ROOK, "Rh3", false, null);
+        Move expectedMove = new BasicMove(Colour.White, PieceType.ROOK, "h3", false, null);
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Rh3");
+        Move move = moveFactory.createMove(Colour.White, "Rh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -47,10 +49,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateRookMoveWithHintAndCapture() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.ROOK, "Rbxh3", false, "b");
+        Move expectedMove = new BasicMove(Colour.White, PieceType.ROOK, "h3", true, "b");
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Rbxh3");
+        Move move = moveFactory.createMove(Colour.White, "Rbxh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -59,10 +61,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateKnightMove() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.KNIGHT, "Nh3", false, null);
+        Move expectedMove = new BasicMove(Colour.White, PieceType.KNIGHT, "h3", false, null);
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Nh3");
+        Move move = moveFactory.createMove(Colour.White, "Nh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -71,10 +73,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateKnightMoveWithHintAndCapture() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.KNIGHT, "Nbxh3", false, "b");
+        Move expectedMove = new BasicMove(Colour.White, PieceType.KNIGHT, "h3", true, "b");
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Nbxh3");
+        Move move = moveFactory.createMove(Colour.White, "Nbxh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -83,10 +85,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateBishopMove() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.BISHOP, "Bh3", false, null);
+        Move expectedMove = new BasicMove(Colour.White, PieceType.BISHOP, "h3", false, null);
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Bh3");
+        Move move = moveFactory.createMove(Colour.White, "Bh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -95,10 +97,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateBishopMoveWithHintAndCapture() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.BISHOP, "Bbxh3", false, "b");
+        Move expectedMove = new BasicMove(Colour.White, PieceType.BISHOP, "h3", true, "b");
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Bbxh3");
+        Move move = moveFactory.createMove(Colour.White, "Bbxh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -107,10 +109,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateQueenMove() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.QUEEN, "Qh3", false, null);
+        Move expectedMove = new BasicMove(Colour.White, PieceType.QUEEN, "h3", false, null);
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Qh3");
+        Move move = moveFactory.createMove(Colour.White, "Qh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -119,10 +121,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateQueenMoveWithHintAndCapture() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.QUEEN, "Qbxh3", false, "b");
+        Move expectedMove = new BasicMove(Colour.White, PieceType.QUEEN, "h3", true, "b");
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Qbxh3");
+        Move move = moveFactory.createMove(Colour.White, "Qbxh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));
@@ -131,10 +133,10 @@ public class MoveFactoryTest {
     @Test
     public void shouldCreateKingMove() {
         // setup
-        Move expectedMove = new BasicMove(Colour.White, PieceType.KING, "Kh3", false, null);
+        Move expectedMove = new BasicMove(Colour.White, PieceType.KING, "h3", false, null);
 
         // act
-        Move move = MoveFactory.createMove(Colour.White, "Kh3");
+        Move move = moveFactory.createMove(Colour.White, "Kh3");
 
         // assert
         assertThat(move, equalTo(expectedMove));

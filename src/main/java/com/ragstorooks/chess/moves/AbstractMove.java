@@ -30,4 +30,11 @@ public abstract class AbstractMove implements Move {
     public int hashCode() {
         return mover != null ? mover.hashCode() : 0;
     }
+
+    @Override
+    public String toString() {
+        return "AbstractMove{" +
+                "mover=" + mover +
+                '}';
+    }
 }

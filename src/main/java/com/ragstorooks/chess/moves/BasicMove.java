@@ -2,7 +2,6 @@ package com.ragstorooks.chess.moves;
 
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.pieces.PieceType;
-import org.apache.commons.lang.builder.EqualsBuilder;
 
 public class BasicMove extends AbstractMove {
     private PieceType pieceType;
@@ -59,5 +58,15 @@ public class BasicMove extends AbstractMove {
         result = 31 * result + (isCapture ? 1 : 0);
         result = 31 * result + (sourceHint != null ? sourceHint.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "BasicMove{" +
+                "pieceType=" + pieceType +
+                ", destination='" + destination + '\'' +
+                ", isCapture=" + isCapture +
+                ", sourceHint='" + sourceHint + '\'' +
+                '}';
     }
 }

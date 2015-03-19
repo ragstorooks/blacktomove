@@ -1,9 +1,8 @@
 package com.ragstorooks.chess.pgn;
 
 import com.ragstorooks.chess.Game;
-import com.ragstorooks.chess.moves.BasicMove;
 import com.ragstorooks.chess.blocks.Colour;
-import com.ragstorooks.chess.pieces.PieceType;
+import com.ragstorooks.chess.moves.MoveFactory;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.AbstractMap.SimpleEntry;
@@ -12,6 +11,16 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class PGNParser {
+    private MoveFactory moveFactory;
+
+    public PGNParser() {
+        this(new MoveFactory());
+    }
+
+    public PGNParser(MoveFactory moveFactory) {
+        this.moveFactory = moveFactory;
+    }
+
     public Game parsePGN(String pgnText) {
         Game game = new Game();
         String[] pgnLines = pgnText.split("[\\r\\n]+");
@@ -35,10 +44,7 @@ public class PGNParser {
         Colour mover = Colour.White;
         String[] movesText = pgn.split("[0-9]+\\.");
         for (String moveText : movesText) {
-            BasicMove move = new BasicMove(mover, getPieceTypeForMove(moveText), moveText.substring(moveText.length() - 2),
-                    moveText.contains("x"), getSourceHintForMove(moveText));
-            game.makeMove(move);
-
+            game.makeMove(moveFactory.createMove(mover, moveText));
             mover = flipMover(mover);
         }
 
@@ -47,32 +53,6 @@ public class PGNParser {
 
     private Colour flipMover(Colour mover) {
         return mover.equals(Colour.White) ? Colour.Black : Colour.White;
-    }
-
-    private String getSourceHintForMove(String moveText) {
-        moveText = moveText.substring(0, moveText.length() - 2).replace("x", "").replaceAll("[A-Z]", "");
-        return moveText.length() == 1 ? moveText : null;
-    }
-
-    private PieceType getPieceTypeForMove(String move) {
-        if (move.length() == 2)
-            return PieceType.PAWN;
-
-        char pieceType = move.charAt(0);
-        switch (pieceType) {
-            case 'R':
-                return PieceType.ROOK;
-            case 'N':
-                return PieceType.KNIGHT;
-            case 'B':
-                return PieceType.BISHOP;
-            case 'Q':
-                return PieceType.QUEEN;
-            case 'K':
-                return PieceType.KING;
-            default:
-                throw new IllegalArgumentException("Unknown move: " + move);
-        }
     }
 
     private Entry<String, String> parseMetadataLine(String line) {

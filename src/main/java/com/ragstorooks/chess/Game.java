@@ -2,7 +2,8 @@ package com.ragstorooks.chess;
 
 import com.ragstorooks.chess.blocks.Board;
 import com.ragstorooks.chess.moves.BasicMove;
-import com.ragstorooks.chess.pieces.AbstractPiece;
+import com.ragstorooks.chess.moves.Move;
+import com.ragstorooks.chess.pieces.Piece;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -16,7 +17,7 @@ import java.util.Map.Entry;
 
 public class Game {
     private Map<String, String> metadata = new HashMap<>();
-    private List<BasicMove> moves = new LinkedList<>();
+    private List<Move> moves = new LinkedList<>();
     private Board board;
 
     public Game() {
@@ -32,28 +33,33 @@ public class Game {
         return this;
     }
 
-    public void makeMove(BasicMove move) {
+    public void makeMove(Move move) {
         boolean isValidMove = false;
+        if (move instanceof BasicMove)
+            isValidMove = makeBasicMove((BasicMove) move);
 
-        Map<String, AbstractPiece> candidatePieces = board.getPiecesOfType(move.getMover(), move.getPieceType());
-        for (Entry<String, AbstractPiece> candidate : candidatePieces.entrySet()) {
+        if (!isValidMove)
+            throw new IllegalArgumentException("Invalid move: " + move);
+
+        moves.add(move);
+    }
+
+    private boolean makeBasicMove(BasicMove move) {
+        Map<String, Piece> candidatePieces = board.getPiecesOfType(move.getMover(), move.getPieceType());
+        for (Entry<String, Piece> candidate : candidatePieces.entrySet()) {
             String originSquare = candidate.getKey();
-            AbstractPiece piece = candidate.getValue();
+            Piece piece = candidate.getValue();
 
             if (move.getSourceHint() != null && !originSquare.contains(move.getSourceHint()))
                 continue;
 
             if (piece.canMoveTo(originSquare, move.getDestination(), move.isCapture(), square -> board.get(square))) {
                 board.movePieceToSquare(candidate, move.getDestination());
-                isValidMove = true;
-                break;
+                return true;
             }
         }
 
-        if (!isValidMove)
-            throw new IllegalArgumentException("Invalid move: " + move);
-
-        moves.add(move);
+        return false;
     }
 
     public String getCurrentBoardPosition() {

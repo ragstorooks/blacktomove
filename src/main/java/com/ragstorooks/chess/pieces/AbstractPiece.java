@@ -3,7 +3,7 @@ package com.ragstorooks.chess.pieces;
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.blocks.Position;
 
-public abstract class AbstractPiece {
+public abstract class AbstractPiece implements Piece {
     private PieceType pieceType;
     private String notation;
     private Colour colour;
@@ -15,19 +15,17 @@ public abstract class AbstractPiece {
                 .toLowerCase();
     }
 
+    @Override
     public PieceType getPieceType() {
         return pieceType;
     }
 
+    @Override
     public Colour getColour() {
         return colour;
     }
 
     @Override
-    public String toString() {
-        return notation;
-    }
-
     public boolean canMoveTo(String originSquare, String destinationSquare, boolean isCapture, Position position) {
         if (originSquare.equals(destinationSquare))
             return false;
@@ -65,4 +63,9 @@ public abstract class AbstractPiece {
     }
 
     protected abstract boolean canMoveTo(PieceMoveDetails pieceMoveDetails, Position position);
+
+    @Override
+    public String toString() {
+        return notation;
+    }
 }
