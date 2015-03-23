@@ -5,8 +5,14 @@ import com.ragstorooks.chess.pieces.PieceType;
 
 public class MoveFactory {
     public Move createMove(Colour mover, String move) {
-        return new BasicMove(mover, getPieceTypeForMove(move), move.substring(move.length() - 2),
-                move.contains("x"), getSourceHintForMove(move));
+        char lastCharacter = move.charAt(move.length() - 1);
+        if (Character.isDigit(lastCharacter))
+            return new BasicMove(mover, getPieceTypeForMove(move), move.substring(move.length() - 2),
+                    move.contains("x"), getSourceHintForMove(move));
+
+        move = move.substring(0, move.length() - 1);
+        return new Promotion(mover, getPieceType(lastCharacter), move.substring(move.length() - 2), move.contains("x"),
+                getSourceHintForMove(move));
     }
 
     private String getSourceHintForMove(String move) {
@@ -18,7 +24,10 @@ public class MoveFactory {
         if (move.length() == 2)
             return PieceType.PAWN;
 
-        char pieceType = move.charAt(0);
+        return getPieceType(move.charAt(0));
+    }
+
+    private PieceType getPieceType(char pieceType) {
         switch (pieceType) {
             case 'R':
                 return PieceType.ROOK;

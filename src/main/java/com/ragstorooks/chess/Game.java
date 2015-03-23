@@ -66,19 +66,6 @@ public class Game {
         return board.toString();
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null)
-            return false;
-        if (obj == this)
-            return true;
-        if (obj.getClass() != getClass())
-            return false;
-
-        Game game = (Game) obj;
-        return CollectionUtils.isEqualCollection(moves, game.moves) && isMetadataEqual(game.metadata);
-    }
-
     private boolean isMetadataEqual(Map<String, String> otherMetadata) {
         if (ObjectUtils.equals(metadata, otherMetadata))
             return true;
@@ -93,6 +80,19 @@ public class Game {
         }
 
         return true;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
+        if (obj == this)
+            return true;
+        if (obj.getClass() != getClass())
+            return false;
+
+        Game game = (Game) obj;
+        return CollectionUtils.isEqualCollection(moves, game.moves) && isMetadataEqual(game.metadata);
     }
 
     @Override

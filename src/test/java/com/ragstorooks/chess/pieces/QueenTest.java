@@ -31,7 +31,7 @@ public class QueenTest {
         Queen queen = new Queen(Colour.White);
 
         // act & assert
-        assertFalse(queen.canMoveTo("f1", "c4", false, square -> square.equals("d3")? new Pawn(Colour.White) : null));
+        assertFalse(queen.canMoveTo("f1", "c4", false, square -> "d3".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -40,7 +40,7 @@ public class QueenTest {
         Queen queen = new Queen(Colour.White);
 
         // act & assert
-        assertFalse(queen.canMoveTo("f1", "c4", false, square -> square.equals("c4")? new Pawn(Colour.White) : null));
+        assertFalse(queen.canMoveTo("f1", "c4", false, square -> "c4".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class QueenTest {
         Queen queen = new Queen(Colour.White);
 
         // act & assert
-        assertFalse(queen.canMoveTo("f1", "c4", false, square -> square.equals("d3")? new Pawn(Colour.Black) : null));
+        assertFalse(queen.canMoveTo("f1", "c4", false, square -> "d3".equals(square)? new Pawn(Colour.Black) : null));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class QueenTest {
         Queen queen = new Queen(Colour.White);
 
         // act & assert
-        assertTrue(queen.canMoveTo("f1", "c4", true, square -> square.equals("c4")? new Pawn(Colour.Black) : null));
+        assertTrue(queen.canMoveTo("f1", "c4", true, square -> "c4".equals(square)? new Pawn(Colour.Black) : null));
     }
 
     @Test
@@ -94,7 +94,7 @@ public class QueenTest {
         Queen queen = new Queen(Colour.White);
 
         // act & assert
-        assertFalse(queen.canMoveTo("f1", "f4", false, square -> square.equals("f3")? new Pawn(Colour.White) : null));
+        assertFalse(queen.canMoveTo("f1", "f4", false, square -> "f3".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -103,7 +103,7 @@ public class QueenTest {
         Queen queen = new Queen(Colour.White);
 
         // act & assert
-        assertFalse(queen.canMoveTo("f1", "f4", false, square -> square.equals("f4")? new Pawn(Colour.White) : null));
+        assertFalse(queen.canMoveTo("f1", "f4", false, square -> "f4".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -112,7 +112,7 @@ public class QueenTest {
         Queen queen = new Queen(Colour.White);
 
         // act & assert
-        assertFalse(queen.canMoveTo("f1", "f4", false, square -> square.equals("f3")? new Pawn(Colour.Black) : null));
+        assertFalse(queen.canMoveTo("f1", "f4", false, square -> "f3".equals(square)? new Pawn(Colour.Black) : null));
     }
 
     @Test
@@ -121,6 +121,6 @@ public class QueenTest {
         Queen queen = new Queen(Colour.White);
 
         // act & assert
-        assertTrue(queen.canMoveTo("c1", "c4", true, square -> square.equals("c4")? new Pawn(Colour.Black) : null));
+        assertTrue(queen.canMoveTo("c1", "c4", true, square -> "c4".equals(square)? new Pawn(Colour.Black) : null));
     }
 }

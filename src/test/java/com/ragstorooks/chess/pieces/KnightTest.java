@@ -41,6 +41,6 @@ public class KnightTest {
         Knight knight = new Knight(Colour.Black);
 
         // act & assert
-        assertFalse(knight.canMoveTo("b1", "d2", true, square -> new Pawn(Colour.Black)));
+        assertFalse(knight.canMoveTo("b1", "d2", true, square -> new Rook(Colour.Black)));
     }
 }

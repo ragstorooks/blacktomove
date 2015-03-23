@@ -46,11 +46,11 @@ public abstract class AbstractPiece implements Piece {
                 numberOfMovingFiles, isCapture), position);
     }
 
-    protected boolean isNotCaptureAndDestinationNotEmpty(boolean isCapture, AbstractPiece pieceAtDestination) {
+    protected boolean isNotCaptureAndDestinationNotEmpty(boolean isCapture, Piece pieceAtDestination) {
         return !isCapture && pieceAtDestination != null;
     }
 
-    protected boolean isCaptureAndOppositionPieceNotAtDestination(boolean isCapture, AbstractPiece pieceAtDestination) {
+    protected boolean isCaptureAndOppositionPieceNotAtDestination(boolean isCapture, Piece pieceAtDestination) {
         return isCapture && (pieceAtDestination == null || getColour().equals(pieceAtDestination.getColour()));
     }
 

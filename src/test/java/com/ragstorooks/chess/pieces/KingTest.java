@@ -31,7 +31,7 @@ public class KingTest {
         King king = new King(Colour.White);
 
         // act & assert
-        assertFalse(king.canMoveTo("f1", "g2", false, square -> square.equals("g2") ? new Pawn(Colour.White) : null));
+        assertFalse(king.canMoveTo("f1", "g2", false, square -> "g2".equals(square) ? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -40,7 +40,7 @@ public class KingTest {
         King king = new King(Colour.White);
 
         // act & assert
-        assertTrue(king.canMoveTo("f1", "g2", true, square -> square.equals("g2") ? new Pawn(Colour.Black) : null));
+        assertTrue(king.canMoveTo("f1", "g2", true, square -> "g2".equals(square) ? new Pawn(Colour.Black) : null));
     }
 
     @Test
@@ -85,7 +85,7 @@ public class KingTest {
         King king = new King(Colour.White);
 
         // act & assert
-        assertFalse(king.canMoveTo("f1", "f2", false, square -> square.equals("f2")? new Pawn(Colour.White) : null));
+        assertFalse(king.canMoveTo("f1", "f2", false, square -> "f2".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -94,6 +94,6 @@ public class KingTest {
         King king = new King(Colour.White);
 
         // act & assert
-        assertTrue(king.canMoveTo("c1", "c2", true, square -> square.equals("c2")? new Pawn(Colour.Black) : null));
+        assertTrue(king.canMoveTo("c1", "c2", true, square -> "c2".equals(square)? new Pawn(Colour.Black) : null));
     }
 }

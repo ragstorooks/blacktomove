@@ -31,7 +31,7 @@ public class BishopTest {
         Bishop bishop = new Bishop(Colour.White);
 
         // act & assert
-        assertFalse(bishop.canMoveTo("f1", "c4", false, square -> square.equals("d3")? new Pawn(Colour.White) : null));
+        assertFalse(bishop.canMoveTo("f1", "c4", false, square -> "d3".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -40,7 +40,8 @@ public class BishopTest {
         Bishop bishop = new Bishop(Colour.White);
 
         // act & assert
-        assertFalse(bishop.canMoveTo("f1", "c4", false, square -> square.equals("c4")? new Pawn(Colour.White) : null));
+//        assertFalse(bishop.canMoveTo("f1", "c4", false, square -> square.equals("c4")? new Pawn(Colour.White) : null));
+        assertFalse(bishop.canMoveTo("f1", "c4", false, square -> "c4".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -49,7 +50,7 @@ public class BishopTest {
         Bishop bishop = new Bishop(Colour.White);
 
         // act & assert
-        assertFalse(bishop.canMoveTo("f1", "c4", false, square -> square.equals("d3")? new Pawn(Colour.Black) : null));
+        assertFalse(bishop.canMoveTo("f1", "c4", false, square -> "d3".equals(square)? new Pawn(Colour.Black) : null));
     }
 
     @Test
@@ -58,6 +59,6 @@ public class BishopTest {
         Bishop bishop = new Bishop(Colour.White);
 
         // act & assert
-        assertTrue(bishop.canMoveTo("f1", "c4", true, square -> square.equals("c4")? new Pawn(Colour.Black) : null));
+        assertTrue(bishop.canMoveTo("f1", "c4", true, square -> "c4".equals(square)? new Pawn(Colour.Black) : null));
     }
 }

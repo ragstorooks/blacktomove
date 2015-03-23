@@ -133,7 +133,5 @@ public class PawnTest {
         assertFalse(pawn.canMoveTo("a2", "b4", true, square -> new Pawn(Colour.Black)));
     }
 
-    // TODO Tests for promotions
-
     // TODO Tests for en-passant
 }

@@ -35,6 +35,30 @@ public class MoveFactoryTest {
     }
 
     @Test
+    public void shouldCreatePawnMoveForPromotion() {
+        // setup
+        Move expectedMove = new Promotion(Colour.White, PieceType.QUEEN, "h8", false, null);
+
+        // act
+        Move move = moveFactory.createMove(Colour.White, "h8Q");
+
+        // assert
+        assertThat(move, equalTo(expectedMove));
+    }
+
+    @Test
+    public void shouldCreatePawnMoveForPromotionWithCapture() {
+        // setup
+        Move expectedMove = new Promotion(Colour.Black, PieceType.ROOK, "h1", true, "g");
+
+        // act
+        Move move = moveFactory.createMove(Colour.Black, "gxh1R");
+
+        // assert
+        assertThat(move, equalTo(expectedMove));
+    }
+
+    @Test
     public void shouldCreateRookMove() {
         // setup
         Move expectedMove = new BasicMove(Colour.White, PieceType.ROOK, "h3", false, null);

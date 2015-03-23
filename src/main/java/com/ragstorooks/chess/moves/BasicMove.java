@@ -2,6 +2,7 @@ package com.ragstorooks.chess.moves;
 
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.pieces.PieceType;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public class BasicMove extends AbstractMove {
     private PieceType pieceType;
@@ -62,11 +63,7 @@ public class BasicMove extends AbstractMove {
 
     @Override
     public String toString() {
-        return "BasicMove{" +
-                "pieceType=" + pieceType +
-                ", destination='" + destination + '\'' +
-                ", isCapture=" + isCapture +
-                ", sourceHint='" + sourceHint + '\'' +
-                '}';
+        return new ToStringBuilder(this).appendSuper(super.toString()).append("pieceType", pieceType).append
+                ("destination", destination).append("isCapture", isCapture).append("sourceHint", sourceHint).toString();
     }
 }

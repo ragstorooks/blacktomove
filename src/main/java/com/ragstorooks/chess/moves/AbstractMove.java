@@ -1,6 +1,7 @@
 package com.ragstorooks.chess.moves;
 
 import com.ragstorooks.chess.blocks.Colour;
+import org.apache.commons.lang.builder.ToStringBuilder;
 
 public abstract class AbstractMove implements Move {
     private Colour mover;
@@ -33,8 +34,6 @@ public abstract class AbstractMove implements Move {
 
     @Override
     public String toString() {
-        return "AbstractMove{" +
-                "mover=" + mover +
-                '}';
+        return new ToStringBuilder(this).append("mover", mover).toString();
     }
 }

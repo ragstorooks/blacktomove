@@ -40,7 +40,7 @@ public class RookTest {
         Rook rook = new Rook(Colour.White);
 
         // act & assert
-        assertFalse(rook.canMoveTo("f1", "f4", false, square -> square.equals("f3")? new Pawn(Colour.White) : null));
+        assertFalse(rook.canMoveTo("f1", "f4", false, square -> "f3".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class RookTest {
         Rook rook = new Rook(Colour.White);
 
         // act & assert
-        assertFalse(rook.canMoveTo("f1", "f4", false, square -> square.equals("f4")? new Pawn(Colour.White) : null));
+        assertFalse(rook.canMoveTo("f1", "f4", false, square -> "f4".equals(square)? new Pawn(Colour.White) : null));
     }
 
     @Test
@@ -58,7 +58,7 @@ public class RookTest {
         Rook rook = new Rook(Colour.White);
 
         // act & assert
-        assertFalse(rook.canMoveTo("f1", "f4", false, square -> square.equals("f3")? new Pawn(Colour.Black) : null));
+        assertFalse(rook.canMoveTo("f1", "f4", false, square -> "f3".equals(square)? new Pawn(Colour.Black) : null));
     }
 
     @Test
@@ -67,6 +67,6 @@ public class RookTest {
         Rook rook = new Rook(Colour.White);
 
         // act & assert
-        assertTrue(rook.canMoveTo("c1", "c4", true, square -> square.equals("c4")? new Pawn(Colour.Black) : null));
+        assertTrue(rook.canMoveTo("c1", "c4", true, square -> "c4".equals(square)? new Pawn(Colour.Black) : null));
     }
 }
