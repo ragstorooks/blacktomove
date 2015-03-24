@@ -1,8 +1,11 @@
 package com.ragstorooks.chess.moves;
 
 import com.ragstorooks.chess.blocks.Colour;
+import com.ragstorooks.chess.pieces.Piece;
 import com.ragstorooks.chess.pieces.PieceType;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import java.util.Map.Entry;
 
 public class BasicMove extends AbstractMove {
     private PieceType pieceType;
@@ -32,6 +35,12 @@ public class BasicMove extends AbstractMove {
 
     public boolean isCapture() {
         return isCapture;
+    }
+
+    @Override
+    public void makeMove(Entry<String, Piece> source, PieceMover pieceMover) {
+        pieceMover.move(source.getKey(), null);
+        pieceMover.move(destination, source.getValue());
     }
 
     @Override

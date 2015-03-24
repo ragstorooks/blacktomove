@@ -1,8 +1,15 @@
 package com.ragstorooks.chess.moves;
 
 import com.ragstorooks.chess.blocks.Colour;
+import com.ragstorooks.chess.pieces.Bishop;
+import com.ragstorooks.chess.pieces.Knight;
+import com.ragstorooks.chess.pieces.Piece;
 import com.ragstorooks.chess.pieces.PieceType;
+import com.ragstorooks.chess.pieces.Queen;
+import com.ragstorooks.chess.pieces.Rook;
 import org.apache.commons.lang.builder.ToStringBuilder;
+
+import java.util.Map;
 
 public class Promotion extends BasicMove {
     private PieceType promotionType;
@@ -11,6 +18,27 @@ public class Promotion extends BasicMove {
         super(mover, PieceType.PAWN, destination, isCapture, sourceHint);
 
         this.promotionType = promotionType;
+    }
+
+    @Override
+    public void makeMove(Map.Entry<String, Piece> source, PieceMover pieceMover) {
+        pieceMover.move(source.getKey(), null);
+        pieceMover.move(getDestination(), createPromotionPiece(promotionType, source.getValue().getColour()));
+    }
+
+    private Piece createPromotionPiece(PieceType promotionType, Colour pieceColour) {
+        switch (promotionType) {
+            case ROOK:
+                return new Rook(pieceColour);
+            case KNIGHT:
+                return new Knight(pieceColour);
+            case BISHOP:
+                return new Bishop(pieceColour);
+            case QUEEN:
+                return new Queen(pieceColour);
+            default:
+                throw new IllegalArgumentException("Unknown promotion piece type: " + promotionType);
+        }
     }
 
     @Override

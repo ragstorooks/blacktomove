@@ -1,9 +1,19 @@
 package com.ragstorooks.chess.blocks;
 
-import com.ragstorooks.chess.pieces.*;
+import com.ragstorooks.chess.pieces.Bishop;
+import com.ragstorooks.chess.pieces.King;
+import com.ragstorooks.chess.pieces.Knight;
+import com.ragstorooks.chess.pieces.Pawn;
+import com.ragstorooks.chess.pieces.Piece;
+import com.ragstorooks.chess.pieces.PieceType;
+import com.ragstorooks.chess.pieces.Queen;
+import com.ragstorooks.chess.pieces.Rook;
 
-import java.util.*;
-import java.util.Map.Entry;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public class Board {
     private static final String INITIAL_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
@@ -94,6 +104,10 @@ public class Board {
         return board.get(square);
     }
 
+    public void put(String square, Piece piece) {
+        board.put(square, piece);
+    }
+
     private String reformatFENRowByPopulatingEmptySquares(String row) {
         StringBuilder result = new StringBuilder();
         for (int i = 0; i < row.length(); i++) {
@@ -106,12 +120,6 @@ public class Board {
                 result.append(c);
         }
         return result.toString();
-    }
-
-    public void movePieceToSquare(Entry<String, Piece> piece, String destinationSquare) {
-        String originSquare = piece.getKey();
-        board.put(originSquare, null);
-        board.put(destinationSquare, piece.getValue());
     }
 
     public Map<String, Piece> getPiecesOfType(Colour movingSide, PieceType pieceType) {

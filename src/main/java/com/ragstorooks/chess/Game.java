@@ -54,7 +54,7 @@ public class Game {
                 continue;
 
             if (piece.canMoveTo(originSquare, move.getDestination(), move.isCapture(), square -> board.get(square))) {
-                board.movePieceToSquare(candidate, move.getDestination());
+                move.makeMove(candidate, (destination, pieceToPlace) -> board.put(destination, pieceToPlace));
                 return true;
             }
         }
