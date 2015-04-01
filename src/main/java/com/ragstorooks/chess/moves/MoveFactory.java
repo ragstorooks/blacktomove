@@ -5,6 +5,12 @@ import com.ragstorooks.chess.pieces.PieceType;
 
 public class MoveFactory {
     public Move createMove(Colour mover, String move) {
+        if ("O-O".equals(move))
+            return new KingsideCastle(mover);
+
+        if ("O-O-O".equals(move))
+            return new QueensideCastle(mover);
+
         char lastCharacter = move.charAt(move.length() - 1);
         if (Character.isDigit(lastCharacter))
             return new BasicMove(mover, getPieceTypeForMove(move), move.substring(move.length() - 2),

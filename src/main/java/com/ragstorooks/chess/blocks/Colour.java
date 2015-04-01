@@ -16,4 +16,8 @@ public enum Colour {
                 return null;
         }
     }
+
+    public static Colour getOppositeColour(Colour colour) {
+        return White.equals(colour)? Black : White;
+    }
 }

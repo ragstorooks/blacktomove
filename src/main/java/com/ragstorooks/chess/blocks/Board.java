@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class Board {
+public class Board implements Cloneable {
     private static final String INITIAL_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
     private static final String NEW_LINE = System.getProperty("line.separator");
@@ -131,11 +131,24 @@ public class Board {
         return candidates;
     }
 
+    public Map<String, Piece> getPiecesOfColour(Colour movingSide) {
+        Map<String, Piece> candidates = new HashMap<>();
+        board.entrySet().stream().filter(square -> square.getValue() != null && square.getValue().getColour().equals
+                (movingSide)).forEach(square -> candidates.put(square.getKey(), square.getValue()));
+
+        return candidates;
+    }
+
     @Override
     public String toString() {
         StringBuilder boardPosition = new StringBuilder();
         board.entrySet().stream().forEach(entry -> boardPosition.append(entry.getValue() == null ? ' ' : entry
                 .getValue()).append(entry.getKey().startsWith(FILES[FILES.length - 1]) ? NEW_LINE : ""));
         return boardPosition.toString();
+    }
+
+    @Override
+    public Board clone() throws CloneNotSupportedException {
+        return (Board) super.clone();
     }
 }

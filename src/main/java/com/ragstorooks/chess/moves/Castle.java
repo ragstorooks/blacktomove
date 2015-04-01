@@ -3,7 +3,9 @@ package com.ragstorooks.chess.moves;
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.pieces.King;
 import com.ragstorooks.chess.pieces.Piece;
+import oracle.jrockit.jfr.StringConstantPool;
 
+import java.util.List;
 import java.util.Map.Entry;
 
 public abstract class Castle extends AbstractMove {
@@ -19,7 +21,7 @@ public abstract class Castle extends AbstractMove {
     protected Castle(Colour mover, String rookFile, String castledKingFile, String castledRookFile) {
         super(mover);
 
-        String backRank = Colour.White.equals(mover) ? WHITE_BACK_RANK : BLACK_BACK_RANK;
+        String backRank = getBackRank();
         kingLocation = KING_FILE + backRank;
         rookLocation = rookFile + backRank;
         castledKingLocation = castledKingFile + backRank;
@@ -34,4 +36,26 @@ public abstract class Castle extends AbstractMove {
         pieceMover.move(castledKingLocation, new King(getMover()));
         pieceMover.move(castledRookLocation, new King(getMover()));
     }
+
+    public String getKingLocation() {
+        return kingLocation;
+    }
+
+    public String getRookLocation() {
+        return rookLocation;
+    }
+
+    public String getCastledKingLocation() {
+        return castledKingLocation;
+    }
+
+    public String getCastledRookLocation() {
+        return castledRookLocation;
+    }
+
+    protected String getBackRank() {
+        return Colour.White.equals(getMover()) ? WHITE_BACK_RANK : BLACK_BACK_RANK;
+    }
+
+    public abstract List<String> getIntermediateSquares();
 }
