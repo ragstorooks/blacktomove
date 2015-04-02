@@ -10,9 +10,6 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class GameTest {
-    private static final String NEWLINE = System.getProperty("line.separator");
-    private static final String EMPTY_ROW = "        " + NEWLINE;
-
     @Test
     public void testThatBoardIsReflectedAfterMakingMove1e4() {
         Game game = new Game(new Board());
@@ -99,5 +96,16 @@ public class GameTest {
 
         // assert
         assertThat(game.getCurrentBoardPosition(), equalTo("rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR"));
+    }
+
+    @Test
+    public void testThatBoardIsReflectedAfterMakingMove1e4e52Bc4Bc5() {
+        Game game = new Game(new Board("rnbqkbnr/pppp1ppp/8/4p3/2B1P3/8/PPPP1PPP/RNBQK1NR"));
+
+        // act
+        game.makeMove(new BasicMove(Colour.Black, PieceType.BISHOP, "c5", false, null));
+
+        // assert
+        assertThat(game.getCurrentBoardPosition(), equalTo("rnbqk1nr/pppp1ppp/8/2b1p3/2B1P3/8/PPPP1PPP/RNBQK1NR"));
     }
 }
