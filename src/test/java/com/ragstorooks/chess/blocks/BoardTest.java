@@ -13,11 +13,10 @@ public class BoardTest {
 
     @Test
     public void testInitialBoardGetsCreatedWithFen() {
-        String expected = "rnbqkbnr" + NEWLINE + "pppppppp" + NEWLINE + EMPTY_ROW + EMPTY_ROW + EMPTY_ROW + EMPTY_ROW +
-                "PPPPPPPP" + NEWLINE + "RNBQKBNR" + NEWLINE;
+        String expected = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
         // act
-        Board board = new Board("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR");
+        Board board = new Board(expected);
 
         // assert
         assertThat(board.toString(), equalTo(expected));
@@ -25,11 +24,10 @@ public class BoardTest {
 
     @Test
     public void testBoardAfterConstructingWithFENFor1e4() {
-        String expected = "rnbqkbnr" + NEWLINE + "pppppppp" + NEWLINE + EMPTY_ROW + EMPTY_ROW + "    P   " + NEWLINE
-                + EMPTY_ROW + "PPPP PPP" + NEWLINE + "RNBQKBNR" + NEWLINE;
+        String expected = "rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR";
 
         // act
-        Board board = new Board("rnbqkbnr/pppppppp/8/8/4P3/8/PPPP1PPP/RNBQKBNR");
+        Board board = new Board(expected);
 
         // assert
         assertThat(board.toString(), equalTo(expected));
@@ -37,11 +35,10 @@ public class BoardTest {
 
     @Test
     public void testBoardAfterConstructingWithFENFor1e4c5() {
-        String expected = "rnbqkbnr" + NEWLINE + "pp ppppp" + NEWLINE + EMPTY_ROW + "  p     " + NEWLINE + "    P   "
-                + NEWLINE + EMPTY_ROW + "PPPP PPP" + NEWLINE + "RNBQKBNR" + NEWLINE;
+        String expected = "rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR";
 
         // act
-        Board board = new Board("rnbqkbnr/pp1ppppp/8/2p5/4P3/8/PPPP1PPP/RNBQKBNR");
+        Board board = new Board(expected);
 
         // assert
         assertThat(board.toString(), equalTo(expected));
@@ -49,11 +46,10 @@ public class BoardTest {
 
     @Test
     public void testBoardAfterConstructingWithFENFor1e4c52Nf3() {
-        String expected = "rnbqkbnr" + NEWLINE + "pp ppppp" + NEWLINE + EMPTY_ROW + "  p     " + NEWLINE + "    P   "
-                + NEWLINE + "     N  " + NEWLINE + "PPPP PPP" + NEWLINE + "RNBQKB R" + NEWLINE;
+        String expected = "rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R";
 
         // act
-        Board board = new Board("rnbqkbnr/pp1ppppp/8/2p5/4P3/5N2/PPPP1PPP/RNBQKB1R");
+        Board board = new Board(expected);
 
         // assert
         assertThat(board.toString(), equalTo(expected));

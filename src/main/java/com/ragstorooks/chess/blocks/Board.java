@@ -18,7 +18,6 @@ import java.util.TreeMap;
 public class Board implements Cloneable {
     private static final String INITIAL_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
-    private static final String NEW_LINE = System.getProperty("line.separator");
     private static final String FEN_NOT_VALID = "FEN not valid: ";
     private static final int BOARD_SIZE = 8;
 
@@ -142,9 +141,20 @@ public class Board implements Cloneable {
     @Override
     public String toString() {
         StringBuilder boardPosition = new StringBuilder();
-        board.entrySet().stream().forEach(entry -> boardPosition.append(entry.getValue() == null ? ' ' : entry
-                .getValue()).append(entry.getKey().startsWith(FILES[FILES.length - 1]) ? NEW_LINE : ""));
+        board.entrySet().stream().forEach(entry -> boardPosition.append(entry.getValue() == null ?
+                incrementOrInitialiseToOne(boardPosition) : entry.getValue()).append(entry.getKey().startsWith
+                (FILES[FILES.length - 1]) && !entry.getKey().endsWith("1") ? "/" : ""));
         return boardPosition.toString();
+    }
+
+    private int incrementOrInitialiseToOne(StringBuilder boardPosition) {
+        int lastCharacterIndex = boardPosition.length() - 1;
+        char lastCharacter = boardPosition.charAt(lastCharacterIndex);
+        if (Character.isDigit(lastCharacter)) {
+            boardPosition.deleteCharAt(lastCharacterIndex);
+            return Character.digit(lastCharacter, 10) + 1;
+        } else
+            return 1;
     }
 
     @Override
