@@ -143,6 +143,30 @@ public class MoveFactoryTest {
     }
 
     @Test
+    public void shouldCreateQueenMoveAndIgnoreCheckSymbol() {
+        // setup
+        Move expectedMove = new BasicMove(Colour.White, PieceType.QUEEN, "h3", false, null);
+
+        // act
+        Move move = moveFactory.createMove(Colour.White, "Qh3+");
+
+        // assert
+        assertThat(move, equalTo(expectedMove));
+    }
+
+    @Test
+    public void shouldCreateQueenMoveAndIgnoreCheckMateSymbol() {
+        // setup
+        Move expectedMove = new BasicMove(Colour.White, PieceType.QUEEN, "h3", false, null);
+
+        // act
+        Move move = moveFactory.createMove(Colour.White, "Qh3#");
+
+        // assert
+        assertThat(move, equalTo(expectedMove));
+    }
+
+    @Test
     public void shouldCreateQueenMoveWithHintAndCapture() {
         // setup
         Move expectedMove = new BasicMove(Colour.White, PieceType.QUEEN, "h3", true, "b");

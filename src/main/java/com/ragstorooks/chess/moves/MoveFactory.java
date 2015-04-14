@@ -5,6 +5,8 @@ import com.ragstorooks.chess.pieces.PieceType;
 
 public class MoveFactory {
     public Move createMove(Colour mover, String move) {
+        move = move.replaceAll("[\\+#]", "");
+        
         if ("O-O".equals(move))
             return new KingsideCastle(mover);
 
