@@ -43,4 +43,22 @@ public class KnightTest {
         // act & assert
         assertFalse(knight.canMoveTo("b1", "d2", true, square -> new Rook(Colour.Black)));
     }
+
+    @Test
+    public void shouldNotBeAbleToMove3Ranks() {
+        // setup
+        Knight knight = new Knight(Colour.White);
+
+        // act & assert
+        assertFalse(knight.canMoveTo("b1", "b4", false, square -> null));
+    }
+
+    @Test
+    public void shouldNotBeAbleToMove3Files() {
+        // setup
+        Knight knight = new Knight(Colour.White);
+
+        // act & assert
+        assertFalse(knight.canMoveTo("b1", "e1", false, square -> null));
+    }
 }

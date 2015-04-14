@@ -10,7 +10,9 @@ public class Knight extends AbstractPiece {
 
     @Override
     protected boolean canMoveTo(PieceMoveDetails pieceMoveDetails, Position position) {
-        if (pieceMoveDetails.getNumberOfMovingFiles() + pieceMoveDetails.getNumberOfMovingRanks() == 3)
+        int numberOfMovingFiles = pieceMoveDetails.getNumberOfMovingFiles();
+        int numberOfMovingRanks = pieceMoveDetails.getNumberOfMovingRanks();
+        if (numberOfMovingFiles > 0 && numberOfMovingRanks > 0 && (numberOfMovingFiles + numberOfMovingRanks == 3))
             return true;
 
         return false;
