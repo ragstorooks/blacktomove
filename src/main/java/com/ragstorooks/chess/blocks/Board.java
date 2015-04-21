@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-public class Board implements Cloneable {
+public class Board {
     private static final String INITIAL_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
     private static final String FEN_NOT_VALID = "FEN not valid: ";
@@ -39,16 +39,12 @@ public class Board implements Cloneable {
         }
     });
 
-    public Board() {
-        this(INITIAL_POSITION);
+    public Board(Board boardToCopy) {
+        board.putAll(boardToCopy.board);
     }
 
-    private void initBoard() {
-        for (int r = 1; r <= BOARD_SIZE; r++) {
-            for (String f : FILES) {
-                board.put(f + r, null);
-            }
-        }
+    public Board() {
+        this(INITIAL_POSITION);
     }
 
     public Board(String fenPosition) {
@@ -95,6 +91,14 @@ public class Board implements Cloneable {
                     default:
                         throw new IllegalArgumentException(FEN_NOT_VALID + fenPosition);
                 }
+            }
+        }
+    }
+
+    private void initBoard() {
+        for (int r = 1; r <= BOARD_SIZE; r++) {
+            for (String f : FILES) {
+                board.put(f + r, null);
             }
         }
     }
@@ -149,16 +153,14 @@ public class Board implements Cloneable {
 
     private int incrementOrInitialiseToOne(StringBuilder boardPosition) {
         int lastCharacterIndex = boardPosition.length() - 1;
-        char lastCharacter = boardPosition.charAt(lastCharacterIndex);
-        if (Character.isDigit(lastCharacter)) {
-            boardPosition.deleteCharAt(lastCharacterIndex);
-            return Character.digit(lastCharacter, 10) + 1;
-        } else
-            return 1;
-    }
+        if (lastCharacterIndex >= 0) {
+            char lastCharacter = boardPosition.charAt(lastCharacterIndex);
+            if (Character.isDigit(lastCharacter)) {
+                boardPosition.deleteCharAt(lastCharacterIndex);
+                return Character.digit(lastCharacter, 10) + 1;
+            }
+        }
 
-    @Override
-    public Board clone() throws CloneNotSupportedException {
-        return (Board) super.clone();
+        return 1;
     }
 }

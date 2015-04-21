@@ -12,6 +12,6 @@ public class KingsideCastle extends Castle {
 
     @Override
     public List<String> getIntermediateSquares() {
-        return Arrays.asList(getKingLocation(), getRookLocation());
+        return Arrays.asList(getCastledKingLocation(), getCastledRookLocation());
     }
 }

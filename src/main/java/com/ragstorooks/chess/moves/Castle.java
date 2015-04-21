@@ -3,6 +3,7 @@ package com.ragstorooks.chess.moves;
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.pieces.King;
 import com.ragstorooks.chess.pieces.Piece;
+import com.ragstorooks.chess.pieces.Rook;
 import oracle.jrockit.jfr.StringConstantPool;
 
 import java.util.List;
@@ -34,7 +35,7 @@ public abstract class Castle extends AbstractMove {
         pieceMover.move(rookLocation, null);
 
         pieceMover.move(castledKingLocation, new King(getMover()));
-        pieceMover.move(castledRookLocation, new King(getMover()));
+        pieceMover.move(castledRookLocation, new Rook(getMover()));
     }
 
     public String getKingLocation() {

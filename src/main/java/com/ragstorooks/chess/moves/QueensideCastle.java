@@ -12,6 +12,6 @@ public class QueensideCastle extends Castle {
 
     @Override
     public List<String> getIntermediateSquares() {
-        return Arrays.asList(getKingLocation(), getRookLocation(), "b" + getBackRank());
+        return Arrays.asList(getCastledKingLocation(), getCastledRookLocation(), "b" + getBackRank());
     }
 }

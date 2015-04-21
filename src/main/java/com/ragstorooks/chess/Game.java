@@ -89,20 +89,20 @@ public class Game {
 
     private boolean isIllegalMoveBecauseOfCheck(BasicMove move, Entry<String, Piece> pieceToMove) {
         Colour mover = move.getMover();
-        try {
-            Board tempBoard = board.clone();
-            move.makeMove(pieceToMove, (destination, pieceToPlace) -> tempBoard.put(destination, pieceToPlace));
-            if (isInCheck(tempBoard, mover))
-                return true;
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
-        }
+        Board tempBoard = new Board(board);
+        move.makeMove(pieceToMove, (destination, pieceToPlace) -> tempBoard.put(destination, pieceToPlace));
+        if (isInCheck(tempBoard, mover))
+            return true;
 
         return false;
     }
 
     public String getCurrentBoardPosition() {
         return board.toString();
+    }
+
+    public Map<String, String> getMetadata() {
+        return metadata;
     }
 
     private boolean isInCheck(Board board, Colour colour) {
