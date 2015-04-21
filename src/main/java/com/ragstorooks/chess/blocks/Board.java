@@ -8,6 +8,8 @@ import com.ragstorooks.chess.pieces.Piece;
 import com.ragstorooks.chess.pieces.PieceType;
 import com.ragstorooks.chess.pieces.Queen;
 import com.ragstorooks.chess.pieces.Rook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Comparator;
 import java.util.HashMap;
@@ -16,6 +18,8 @@ import java.util.SortedMap;
 import java.util.TreeMap;
 
 public class Board {
+    private static final Logger logger = LoggerFactory.getLogger(Board.class);
+
     private static final String INITIAL_POSITION = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 
     private static final String FEN_NOT_VALID = "FEN not valid: ";
@@ -131,6 +135,7 @@ public class Board {
                 (movingSide) && square.getValue().getPieceType().equals(pieceType)).forEach(square -> candidates.put
                 (square.getKey(), square.getValue()));
 
+        logger.debug("{} pieces of type {} in {} are at {}", movingSide, pieceType, board, candidates.values());
         return candidates;
     }
 
@@ -139,6 +144,7 @@ public class Board {
         board.entrySet().stream().filter(square -> square.getValue() != null && square.getValue().getColour().equals
                 (movingSide)).forEach(square -> candidates.put(square.getKey(), square.getValue()));
 
+        logger.debug("{} pieces in {} are at {}", movingSide, board, candidates.values());
         return candidates;
     }
 

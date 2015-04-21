@@ -11,6 +11,8 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -19,6 +21,8 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 public class Game {
+    private static final Logger logger = LoggerFactory.getLogger(Game.class);
+
     private Map<String, String> metadata = new HashMap<>();
     private List<Move> moves = new LinkedList<>();
     private Board board;
@@ -37,6 +41,8 @@ public class Game {
     }
 
     public void makeMove(Move move) {
+        logger.info("Current Board position: {}, Current Move: {}", board.toString(), move);
+
         boolean isValidMove = false;
         if (move instanceof BasicMove)
             isValidMove = makeBasicMove((BasicMove) move);
