@@ -68,4 +68,26 @@ public abstract class AbstractPiece implements Piece {
     public String toString() {
         return notation;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        AbstractPiece that = (AbstractPiece) o;
+
+        if (colour != that.colour) return false;
+        if (notation != null ? !notation.equals(that.notation) : that.notation != null) return false;
+        if (pieceType != that.pieceType) return false;
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = pieceType != null ? pieceType.hashCode() : 0;
+        result = 31 * result + (notation != null ? notation.hashCode() : 0);
+        result = 31 * result + (colour != null ? colour.hashCode() : 0);
+        return result;
+    }
 }
