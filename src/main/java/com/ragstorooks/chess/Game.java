@@ -95,7 +95,7 @@ public class Game {
 
     private boolean isIllegalMoveBecauseOfCheck(BasicMove move, Entry<String, Piece> pieceToMove) {
         Colour mover = move.getMover();
-        Board tempBoard = new Board(board);
+        Board tempBoard = board.copy();
         move.makeMove(pieceToMove, (destination, pieceToPlace) -> tempBoard.put(destination, pieceToPlace));
         if (isInCheck(tempBoard, mover))
             return true;

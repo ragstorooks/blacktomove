@@ -99,4 +99,17 @@ public class BoardTest {
         assertThat(whitePieces.get("h3"), equalTo(pawn));
         assertThat(whitePieces.get("g3"), equalTo(pawn));
     }
+
+    @Test
+    public void testThatCopyOfBoardContainsTheSameMappingOfPieces() {
+        // setup
+        String position = "8/8/8/7k/8/6PP/7K/8";
+        Board board = new Board(position);
+
+        // act
+        Board newBoard = board.copy();
+
+        // verify
+        assertThat(newBoard.toString(), equalTo(position));
+    }
 }

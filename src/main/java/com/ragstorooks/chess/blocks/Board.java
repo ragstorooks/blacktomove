@@ -43,7 +43,7 @@ public class Board {
         }
     });
 
-    public Board(Board boardToCopy) {
+    private Board(Board boardToCopy) {
         board.putAll(boardToCopy.board);
     }
 
@@ -97,6 +97,10 @@ public class Board {
                 }
             }
         }
+    }
+
+    public Board copy() {
+        return new Board(this);
     }
 
     private void initBoard() {
