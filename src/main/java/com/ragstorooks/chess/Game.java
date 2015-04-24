@@ -4,7 +4,10 @@ import com.ragstorooks.chess.blocks.Board;
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.moves.BasicMove;
 import com.ragstorooks.chess.moves.Castle;
+import com.ragstorooks.chess.moves.KingsideCastle;
 import com.ragstorooks.chess.moves.Move;
+import com.ragstorooks.chess.moves.QueensideCastle;
+import com.ragstorooks.chess.pieces.King;
 import com.ragstorooks.chess.pieces.Piece;
 import com.ragstorooks.chess.pieces.PieceType;
 import org.apache.commons.collections.CollectionUtils;
@@ -27,12 +30,17 @@ public class Game {
     private List<Move> moves = new LinkedList<>();
     private Board board;
 
+    private Map<Colour, CastleOptions> castleOptions = new HashMap<>();
+
     public Game() {
         this(new Board());
     }
 
     public Game(Board board) {
         this.board = board;
+
+        castleOptions.put(Colour.White, new CastleOptions());
+        castleOptions.put(Colour.Black, new CastleOptions());
     }
 
     public Game addMeta(String key, String value) {
@@ -56,7 +64,8 @@ public class Game {
     }
 
     private boolean makeBasicMove(BasicMove move) {
-        Map<String, Piece> candidatePieces = board.getPiecesOfType(move.getMover(), move.getPieceType());
+        Colour mover = move.getMover();
+        Map<String, Piece> candidatePieces = board.getPiecesOfType(mover, move.getPieceType());
         for (Entry<String, Piece> candidate : candidatePieces.entrySet()) {
             String originSquare = candidate.getKey();
             Piece piece = candidate.getValue();
@@ -67,6 +76,8 @@ public class Game {
             if (piece.canMoveTo(originSquare, move.getDestination(), move.isCapture(), square -> board.get(square))
                     && !isIllegalMoveBecauseOfCheck(move, candidate)) {
                 move.makeMove(candidate, (destination, pieceToPlace) -> board.put(destination, pieceToPlace));
+                updateCastlingAllowed(move.getPieceType(), mover, originSquare);
+
                 return true;
             }
         }
@@ -74,12 +85,30 @@ public class Game {
         return false;
     }
 
+    private void updateCastlingAllowed(PieceType pieceType, Colour mover, String originSquare) {
+        if (PieceType.KING.equals(pieceType)) {
+            castleOptions.get(mover).kingsideCastleAllowed = false;
+            castleOptions.get(mover).queensideCastleAllowed = false;
+        } else if (PieceType.ROOK.equals(pieceType)) {
+            if ((Colour.White.equals(mover) && "a1".equals(originSquare)) ||
+                    Colour.Black.equals(mover) && "a8".equals(originSquare))
+                castleOptions.get(mover).queensideCastleAllowed = false;
+            else if ((Colour.White.equals(mover) && "h1".equals(originSquare)) ||
+                    Colour.Black.equals(mover) && "h8".equals(originSquare))
+                castleOptions.get(mover).kingsideCastleAllowed = false;
+        }
+    }
+
     private boolean castle(Castle move) {
+        Colour mover = move.getMover();
+        if ((move instanceof KingsideCastle && !castleOptions.get(mover).kingsideCastleAllowed) ||
+                (move instanceof QueensideCastle && !castleOptions.get(mover).queensideCastleAllowed))
+            return false;
+
         for (String square : move.getIntermediateSquares())
             if (board.get(square) != null)
                 return false;
 
-        Colour mover = move.getMover();
         if (isInCheck(board, mover))
             return false;
 
@@ -90,6 +119,10 @@ public class Game {
             return false;
 
         move.makeMove(king, (destination, pieceToPlace) -> board.put(destination, pieceToPlace));
+
+        castleOptions.get(mover).kingsideCastleAllowed = false;
+        castleOptions.get(mover).queensideCastleAllowed = false;
+
         return true;
     }
 
@@ -167,5 +200,10 @@ public class Game {
     @Override
     public String toString() {
         return new ToStringBuilder(this).append("metadata", metadata).append("moves", moves).toString();
+    }
+
+    private static class CastleOptions {
+        private boolean kingsideCastleAllowed = true;
+        private boolean queensideCastleAllowed = true;
     }
 }

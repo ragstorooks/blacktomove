@@ -26,6 +26,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
@@ -437,6 +438,62 @@ public class GameTest {
     public void testQueensideCastleFailsIfPieceExistsOnb1() {
         // setup
         pieces.put("b1", whiteRook);
+
+        // act
+        game.makeMove(new QueensideCastle(Colour.White));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThatKingsideCastleShouldFailIfWhiteKingHasAlreadyMoved() {
+        // setup
+        try {
+            when(whiteKing.canMoveTo(eq("e1"), eq("f1"), eq(false), isA(Position.class))).thenReturn(true);
+            game.makeMove(new BasicMove(Colour.White, PieceType.KING, "f1", false, null));
+        } catch(Exception e) {
+            fail("No exceptions to be caught in the setup portion of the method");
+        }
+
+        // act
+        game.makeMove(new KingsideCastle(Colour.White));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThatKingsideCastleShouldFailIfWhiteKingsideRookHasAlreadyMoved() {
+        // setup
+        try {
+            when(whiteRook.canMoveTo(eq("h1"), eq("f1"), eq(false), isA(Position.class))).thenReturn(true);
+            game.makeMove(new BasicMove(Colour.White, PieceType.ROOK, "f1", false, null));
+        } catch(Exception e) {
+            fail("No exceptions to be caught in the setup portion of the method");
+        }
+
+        // act
+        game.makeMove(new KingsideCastle(Colour.White));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThatQueensideCastleShouldFailIfWhiteKingHasAlreadyMoved() {
+        // setup
+        try {
+            when(whiteKing.canMoveTo(eq("e1"), eq("f1"), eq(false), isA(Position.class))).thenReturn(true);
+            game.makeMove(new BasicMove(Colour.White, PieceType.KING, "f1", false, null));
+        } catch(Exception e) {
+            fail("No exceptions to be caught in the setup portion of the method");
+        }
+
+        // act
+        game.makeMove(new QueensideCastle(Colour.White));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThatQueensideCastleShouldFailIfWhiteQueensideRookHasAlreadyMoved() {
+        // setup
+        try {
+            when(whiteRook.canMoveTo(eq("a1"), eq("f1"), eq(false), isA(Position.class))).thenReturn(true);
+            game.makeMove(new BasicMove(Colour.White, PieceType.ROOK, "f1", false, null));
+        } catch(Exception e) {
+            fail("No exceptions to be caught in the setup portion of the method");
+        }
 
         // act
         game.makeMove(new QueensideCastle(Colour.White));
