@@ -14,28 +14,28 @@ import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
 public class QueensideCastleTest {
-    private Move move = new QueensideCastle(Colour.White);
+    private Move move = new QueensideCastle(Colour.Black);
 
     @Mock
     private PieceMover pieceMover;
 
     @Test
-    public void shouldMoveKingFromE1ToG1() {
+    public void shouldMoveKingFromE8ToG8() {
         // act
         move.makeMove(null, pieceMover);
 
         // assert
-        verify(pieceMover).move("e1", null);
-        verify(pieceMover).move(eq("c1"), isA(King.class));
+        verify(pieceMover).move("e8", null);
+        verify(pieceMover).move(eq("c8"), isA(King.class));
     }
 
     @Test
-    public void shouldMoveRookFromA1ToD1() {
+    public void shouldMoveRookFromA8ToD8() {
         // act
         move.makeMove(null, pieceMover);
 
         // assert
-        verify(pieceMover).move("a1", null);
-        verify(pieceMover).move(eq("d1"), isA(Rook.class));
+        verify(pieceMover).move("a8", null);
+        verify(pieceMover).move(eq("d8"), isA(Rook.class));
     }
 }

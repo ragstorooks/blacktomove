@@ -161,6 +161,18 @@ public class GameTest {
     }
 
     @Test
+    public void testThatCurrentBoardPositionIsReturned() {
+        // setup
+        when(gameBoard.toString()).thenReturn("test board");
+
+        // act
+        String boardPosition = game.getCurrentBoardPosition();
+
+        // verify
+        assertThat(boardPosition, equalTo("test board"));
+    }
+
+    @Test
     public void testThatBasicMoveIsMadeIfNoCheck() {
         // setup
         when(whitePawn.canMoveTo(eq("e2"), eq("e4"), eq(false), isA(Position.class))).thenReturn(true);

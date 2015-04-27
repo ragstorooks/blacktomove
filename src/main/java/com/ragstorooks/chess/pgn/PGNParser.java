@@ -69,7 +69,7 @@ public class PGNParser {
                     game.makeMove(moveFactory.createMove(mover, halfMove));
                 } catch (IllegalArgumentException e) {
                     logger.error("Error making move: " + halfMove, e);
-                    throw e;
+                    throw new PGNParseException(e);
                 }
                 mover = flipMover(mover);
             }

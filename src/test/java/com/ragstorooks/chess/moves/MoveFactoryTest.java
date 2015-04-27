@@ -189,4 +189,28 @@ public class MoveFactoryTest {
         // assert
         assertThat(move, equalTo(expectedMove));
     }
+
+    @Test
+    public void shouldCreateKingsideCastle() {
+        // setup
+        Move expectedMove = new KingsideCastle(Colour.White);
+
+        // act
+        Move move = moveFactory.createMove(Colour.White, "O-O");
+
+        // assert
+        assertThat(move, equalTo(expectedMove));
+    }
+
+    @Test
+    public void shouldCreateQueensideCastle() {
+        // setup
+        Move expectedMove = new QueensideCastle(Colour.White);
+
+        // act
+        Move move = moveFactory.createMove(Colour.White, "O-O-O");
+
+        // assert
+        assertThat(move, equalTo(expectedMove));
+    }
 }

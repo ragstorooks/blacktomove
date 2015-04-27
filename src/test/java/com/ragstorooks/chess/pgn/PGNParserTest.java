@@ -19,6 +19,7 @@ import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +29,7 @@ public class PGNParserTest {
     private final static String NEWLINE = System.lineSeparator();
 
     private String simplePgn = "[key1 \"value1\"]" + NEWLINE +
-            "[key2 \"value2\"]" + NEWLINE + NEWLINE +
+            "[key2 \"value2\"]" + NEWLINE + " " + NEWLINE +
             "1. e4 e5 1/2-1/2";
 
     @Mock
@@ -92,6 +93,17 @@ public class PGNParserTest {
     public void testThatMissingMovesInPgnThrowsException() {
         // setup
         simplePgn = simplePgn.replaceAll("1. e4.*$", "");
+
+        // act
+        pgnParser.parsePGN(simplePgn);
+    }
+
+    @Test(expected = PGNParseException.class)
+    public void testThatAnExceptionWhileMakingMoveThrowsParseException() {
+        // setup
+        Move move1 = mock(Move.class);
+        when(moveFactory.createMove(Colour.White, "e4")).thenReturn(move1);
+        doThrow(new IllegalArgumentException()).when(game).makeMove(move1);
 
         // act
         pgnParser.parsePGN(simplePgn);

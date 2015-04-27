@@ -26,6 +26,15 @@ public class PawnTest {
     }
 
     @Test
+    public void shouldNotBeAbleToMoveToTheSameSquare() {
+        // setup
+        Pawn pawn = new Pawn(Colour.White);
+
+        // act & assert
+        assertFalse(pawn.canMoveTo("a2", "a2", false, square -> null));
+    }
+
+    @Test
     public void shouldNotBeAbleToMoveToADifferentFileIfNotCapture() {
         // setup
         Pawn pawn = new Pawn(Colour.White);
@@ -131,6 +140,15 @@ public class PawnTest {
 
         // act & assert
         assertFalse(pawn.canMoveTo("a2", "b4", true, square -> new Pawn(Colour.Black)));
+    }
+
+    @Test
+    public void shouldNotBeAbleToMoveTwoRanksIfSquareInMiddleIsOccupied() {
+        // setup
+        Pawn pawn = new Pawn(Colour.White);
+
+        // act & assert
+        assertFalse(pawn.canMoveTo("a2", "a4", false, square -> "a3".equals(square)? new Pawn(Colour.Black) : null));
     }
 
     // TODO Tests for en-passant
