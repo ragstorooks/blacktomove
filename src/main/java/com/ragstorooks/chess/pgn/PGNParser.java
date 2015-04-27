@@ -33,7 +33,7 @@ public class PGNParser {
         logger.info("Parsing PGN, view debug logs for actual pgn");
         logger.debug("Parsing PGN: {}", pgnText);
 
-        Game game = new Game();
+        Game game = createNewGame();
         String[] pgnLines = pgnText.split("[\\r\\n]+");
 
         StringBuilder sb = new StringBuilder();
@@ -68,8 +68,7 @@ public class PGNParser {
                 try {
                     game.makeMove(moveFactory.createMove(mover, halfMove));
                 } catch (IllegalArgumentException e) {
-                    System.err.println("Error making move: " + halfMove);
-                    e.printStackTrace();
+                    logger.error("Error making move: " + halfMove, e);
                     throw e;
                 }
                 mover = flipMover(mover);
@@ -77,6 +76,10 @@ public class PGNParser {
         }
 
         return game;
+    }
+
+    Game createNewGame() {
+        return new Game();
     }
 
     private Colour flipMover(Colour mover) {
