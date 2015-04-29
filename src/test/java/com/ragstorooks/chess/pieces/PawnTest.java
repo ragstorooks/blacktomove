@@ -151,5 +151,23 @@ public class PawnTest {
         assertFalse(pawn.canMoveTo("a2", "a4", false, square -> "a3".equals(square)? new Pawn(Colour.Black) : null));
     }
 
+    @Test
+    public void whitePawnShouldNotBeAbleToMoveToSecondRank() {
+        // setup
+        Pawn pawn = new Pawn(Colour.White);
+
+        // act & assert
+        assertFalse(pawn.canMoveTo("a1", "a2", false, square -> null));
+    }
+
+    @Test
+    public void blackPawnShouldNotBeAbleToMoveToSeventhRank() {
+        // setup
+        Pawn pawn = new Pawn(Colour.Black);
+
+        // act & assert
+        assertFalse(pawn.canMoveTo("a8", "a7", false, square -> null));
+    }
+
     // TODO Tests for en-passant
 }

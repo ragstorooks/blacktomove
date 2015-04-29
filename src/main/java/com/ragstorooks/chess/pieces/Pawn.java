@@ -20,13 +20,16 @@ public class Pawn extends AbstractPiece {
 
         if (pieceMoveDetails.getNumberOfMovingRanks() == 2) {
             if ((Colour.White.equals(getColour()) && pieceMoveDetails.getOriginRank() != 2) || (Colour.Black.equals
-                    (getColour()) &&
-                    pieceMoveDetails.getOriginRank() != 7))
+                    (getColour()) && pieceMoveDetails.getOriginRank() != 7))
                 return false;
             if (position.get(String.format("%c%d", pieceMoveDetails.getOriginFile(), ((pieceMoveDetails.getOriginRank
                     () + pieceMoveDetails.getDestinationRank()) / 2))) != null)
                 return false;
         }
+
+        if ((Colour.White.equals(getColour()) && pieceMoveDetails.getDestinationRank() <= 2) ||
+                (Colour.Black.equals(getColour()) && pieceMoveDetails.getDestinationRank() >= 7))
+            return false;
 
         return true;
     }
