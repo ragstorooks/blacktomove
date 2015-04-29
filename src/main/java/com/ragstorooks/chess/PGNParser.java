@@ -1,12 +1,15 @@
-package com.ragstorooks.chess.pgn;
+package com.ragstorooks.chess;
 
-import com.ragstorooks.chess.Game;
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.moves.MoveFactory;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.List;
@@ -27,6 +30,15 @@ public class PGNParser {
 
     public PGNParser(MoveFactory moveFactory) {
         this.moveFactory = moveFactory;
+    }
+
+    public Game parsePGN(File pgnFile) {
+        try {
+            return parsePGN(FileUtils.readFileToString(pgnFile, Charset.forName("UTF-8")));
+        } catch (IOException e) {
+            logger.error("Unable to read file to parse pgn", e);
+            throw new PGNParseException(e);
+        }
     }
 
     public Game parsePGN(String pgnText) {
