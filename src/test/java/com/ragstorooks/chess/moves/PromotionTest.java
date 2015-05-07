@@ -15,6 +15,7 @@ import java.util.AbstractMap.SimpleEntry;
 
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -94,5 +95,19 @@ public class PromotionTest {
 
         // act
         move.makeMove(new SimpleEntry<String, Piece>(SOURCE, piece), pieceMover);
+    }
+
+    @Test
+    public void shouldReceiveNullEnPassantableEventNotification() {
+        // setup
+        Move move = new Promotion(null, PieceType.KNIGHT, DESTINATION, false, null);
+        EnPassantableEventListener enPassantableEventListener = mock(EnPassantableEventListener.class);
+        move.registerEnPassantableEventListener(enPassantableEventListener);
+
+        // act
+        move.makeMove(new SimpleEntry<String, Piece>(SOURCE, piece), pieceMover);
+
+        // assert
+        verify(enPassantableEventListener).notify(null);
     }
 }

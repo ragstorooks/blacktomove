@@ -5,6 +5,8 @@ import com.ragstorooks.chess.pieces.Piece;
 import com.ragstorooks.chess.pieces.PieceType;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map.Entry;
 
 public class BasicMove extends AbstractMove {
@@ -38,9 +40,35 @@ public class BasicMove extends AbstractMove {
     }
 
     @Override
-    public void makeMove(Entry<String, Piece> source, PieceMover pieceMover) {
-        pieceMover.move(source.getKey(), null);
-        pieceMover.move(destination, source.getValue());
+    public EnPassantableEvent move(Entry<String, Piece> source, PieceMover pieceMover) {
+        String sourceSquare = source.getKey();
+        Piece piece = source.getValue();
+
+        pieceMover.move(sourceSquare, null);
+        pieceMover.move(destination, piece);
+
+        if (isADoublePawnMove(piece, sourceSquare, destination))
+            return new EnPassantableEvent(getCapturableSquare(sourceSquare));
+
+        return null;
+    }
+
+    private String getCapturableSquare(String source) {
+        char file = source.charAt(0);
+        int rank = Integer.parseInt(source.substring(1));
+
+        return "" + file + (Colour.White.equals(getMover())? rank + 1 : rank - 1);
+    }
+
+    private boolean isADoublePawnMove(Piece piece, String source, String destination) {
+        if (!PieceType.PAWN.equals(getPieceType()))
+            return false;
+
+        int destinationRank = Integer.parseInt(destination.substring(1));
+        int originRank = Integer.parseInt(source.substring(1));
+        int numberOfMovingRanks = Math.abs(destinationRank - originRank);
+
+        return numberOfMovingRanks == 2;
     }
 
     @Override

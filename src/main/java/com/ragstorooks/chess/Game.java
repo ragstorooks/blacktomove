@@ -4,10 +4,12 @@ import com.ragstorooks.chess.blocks.Board;
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.moves.BasicMove;
 import com.ragstorooks.chess.moves.Castle;
+import com.ragstorooks.chess.moves.EnPassantableEvent;
+import com.ragstorooks.chess.moves.EnPassantableEventListener;
 import com.ragstorooks.chess.moves.KingsideCastle;
 import com.ragstorooks.chess.moves.Move;
 import com.ragstorooks.chess.moves.QueensideCastle;
-import com.ragstorooks.chess.pieces.King;
+import com.ragstorooks.chess.pieces.Pawn;
 import com.ragstorooks.chess.pieces.Piece;
 import com.ragstorooks.chess.pieces.PieceType;
 import org.apache.commons.collections.CollectionUtils;
@@ -23,7 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-public class Game {
+public class Game implements EnPassantableEventListener {
     private static final Logger logger = LoggerFactory.getLogger(Game.class);
 
     private Map<String, String> metadata = new HashMap<>();
@@ -31,6 +33,7 @@ public class Game {
     private Board board;
 
     private Map<Colour, CastleOptions> castleOptions = new HashMap<>();
+    private String enPassantableSquare;
 
     public Game() {
         this(new Board());
@@ -65,7 +68,8 @@ public class Game {
 
     private boolean makeBasicMove(BasicMove move) {
         Colour mover = move.getMover();
-        Map<String, Piece> candidatePieces = board.getPiecesOfType(mover, move.getPieceType());
+        PieceType pieceType = move.getPieceType();
+        Map<String, Piece> candidatePieces = board.getPiecesOfType(mover, pieceType);
         for (Entry<String, Piece> candidate : candidatePieces.entrySet()) {
             String originSquare = candidate.getKey();
             Piece piece = candidate.getValue();
@@ -73,16 +77,36 @@ public class Game {
             if (move.getSourceHint() != null && !originSquare.contains(move.getSourceHint()))
                 continue;
 
-            if (piece.canMoveTo(originSquare, move.getDestination(), move.isCapture(), square -> board.get(square))
+            String destinationSquare = move.getDestination();
+            boolean isEnPassantMove = PieceType.PAWN.equals(pieceType) && move.isCapture() &&
+                    destinationSquare.equals(enPassantableSquare);
+
+            if (piece.canMoveTo(originSquare, destinationSquare, move.isCapture(),
+                    square -> isEnPassantMove && destinationSquare.equals(square) ?
+                            new Pawn(Colour.getOppositeColour(mover)) : board.get(square))
                     && !isIllegalMoveBecauseOfCheck(move, candidate)) {
+                move.registerEnPassantableEventListener(this);
+
                 move.makeMove(candidate, (destination, pieceToPlace) -> board.put(destination, pieceToPlace));
-                updateCastlingAllowed(move.getPieceType(), mover, originSquare);
+                if (isEnPassantMove)
+                    board.put(getEnPassantedPawn(move), null);
+
+                updateCastlingAllowed(pieceType, mover, originSquare);
 
                 return true;
             }
         }
 
         return false;
+    }
+
+    private String getEnPassantedPawn(BasicMove move) {
+        String destinationSquare = move.getDestination();
+        char destinationFile = destinationSquare.charAt(0);
+        int destinationRank = Integer.parseInt(destinationSquare.substring(1));
+
+        int enPassantedPawnRank = Colour.White.equals(move.getMover())? destinationRank - 1 : destinationRank + 1;
+        return "" + destinationFile + enPassantedPawnRank;
     }
 
     private void updateCastlingAllowed(PieceType pieceType, Colour mover, String originSquare) {
@@ -134,6 +158,11 @@ public class Game {
             return true;
 
         return false;
+    }
+
+    @Override
+    public void notify(EnPassantableEvent enPassantableEvent) {
+        enPassantableSquare = enPassantableEvent == null? null : enPassantableEvent.getEnPassantableSquare();
     }
 
     public String getCurrentBoardPosition() {

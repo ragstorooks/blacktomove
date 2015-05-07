@@ -9,4 +9,6 @@ public interface Move {
     Colour getMover();
 
     void makeMove(Entry<String, Piece> source, PieceMover pieceMover);
+
+    void registerEnPassantableEventListener(EnPassantableEventListener enPassantableEventListener);
 }

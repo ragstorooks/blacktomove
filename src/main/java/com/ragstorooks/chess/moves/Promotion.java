@@ -21,9 +21,11 @@ public class Promotion extends BasicMove {
     }
 
     @Override
-    public void makeMove(Map.Entry<String, Piece> source, PieceMover pieceMover) {
+    public EnPassantableEvent move(Map.Entry<String, Piece> source, PieceMover pieceMover) {
         pieceMover.move(source.getKey(), null);
         pieceMover.move(getDestination(), createPromotionPiece(promotionType, source.getValue().getColour()));
+
+        return null;
     }
 
     private Piece createPromotionPiece(PieceType promotionType, Colour pieceColour) {

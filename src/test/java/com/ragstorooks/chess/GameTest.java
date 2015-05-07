@@ -4,6 +4,7 @@ import com.ragstorooks.chess.blocks.Board;
 import com.ragstorooks.chess.blocks.Colour;
 import com.ragstorooks.chess.blocks.Position;
 import com.ragstorooks.chess.moves.BasicMove;
+import com.ragstorooks.chess.moves.EnPassantableEvent;
 import com.ragstorooks.chess.moves.KingsideCastle;
 import com.ragstorooks.chess.moves.Promotion;
 import com.ragstorooks.chess.moves.QueensideCastle;
@@ -31,6 +32,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isA;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -509,5 +511,31 @@ public class GameTest {
 
         // act
         game.makeMove(new QueensideCastle(Colour.White));
+    }
+
+    @Test
+    public void shouldNotAllowEnPassantLikeCaptureIfNotEnPassantable() {
+        // setup
+        when(blackPawn.canMoveTo(eq("e7"), eq("f3"), eq(true), isA(Position.class))).thenReturn(true);
+        game.notify(null);
+
+        // act
+        game.makeMove(new BasicMove(Colour.Black, PieceType.PAWN, "f3", true, "e"));
+
+        // verify
+        verify(gameBoard, never()).put("f4", null);
+    }
+
+    @Test
+    public void shouldAllowEnPassantLikeCaptureIfEnPassantable() {
+        // setup
+        when(blackPawn.canMoveTo(eq("e7"), eq("f3"), eq(true), isA(Position.class))).thenReturn(true);
+        game.notify(new EnPassantableEvent("f3"));
+
+        // act
+        game.makeMove(new BasicMove(Colour.Black, PieceType.PAWN, "f3", true, "e"));
+
+        // verify
+        verify(gameBoard).put("f4", null);
     }
 }

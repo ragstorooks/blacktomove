@@ -29,12 +29,14 @@ public abstract class Castle extends AbstractMove {
     }
 
     @Override
-    public void makeMove(Entry<String, Piece> source, PieceMover pieceMover) {
+    public EnPassantableEvent move(Entry<String, Piece> source, PieceMover pieceMover) {
         pieceMover.move(kingLocation, null);
         pieceMover.move(rookLocation, null);
 
         pieceMover.move(castledKingLocation, new King(getMover()));
         pieceMover.move(castledRookLocation, new Rook(getMover()));
+
+        return null;
     }
 
     public String getCastledKingLocation() {
