@@ -52,7 +52,7 @@ public class Game implements EnPassantableEventListener {
     }
 
     public void makeMove(Move move) {
-        logger.info("Current Board position: {}, Current Move: {}", board.toString(), move);
+        logger.debug("Current Board position: {}, Current Move: {}", board.toString(), move);
 
         boolean isValidMove = false;
         if (move instanceof BasicMove)

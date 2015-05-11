@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.AbstractMap.SimpleEntry;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map.Entry;
@@ -20,8 +21,12 @@ import java.util.regex.Pattern;
 public class PGNParser {
     private static final Logger logger = LoggerFactory.getLogger(PGNParser.class);
 
-    private final List<String> results = Arrays.asList("1-0", "0-1", "1/2-1/2");
+    private static final String MULTI_GAME_SPLITTER = "^\\s*$[\\r\\n]+^\\[";
+    private static final Pattern MULTI_GAME_SPLITTER_PATTERN = Pattern.compile(MULTI_GAME_SPLITTER, Pattern.MULTILINE);
+    private static final String MOVE_SPLITTER = "[0-9]+\\.";
+    private static final Pattern MOVE_SPLITTER_PATTERN = Pattern.compile(MOVE_SPLITTER, Pattern.MULTILINE);
 
+    private final List<String> results = Arrays.asList("1-0", "0-1", "1/2-1/2");
     private MoveFactory moveFactory;
 
     public PGNParser() {
@@ -32,17 +37,30 @@ public class PGNParser {
         this.moveFactory = moveFactory;
     }
 
-    public Game parsePGN(File pgnFile) {
+    public List<Game> parsePGN(File pgnFile) {
+        logger.info("Parsing PGN file {}, view debug logs for actual pgn", pgnFile);
         try {
-            return parsePGN(FileUtils.readFileToString(pgnFile, Charset.forName("UTF-8")));
+            return parseMultiGamePGN(FileUtils.readFileToString(pgnFile, Charset.forName("UTF-8")));
         } catch (IOException e) {
             logger.error("Unable to read file to parse pgn", e);
             throw new PGNParseException(e);
         }
     }
 
-    public Game parsePGN(String pgnText) {
-        logger.info("Parsing PGN, view debug logs for actual pgn");
+    public List<Game> parseMultiGamePGN(String pgnText) {
+        List<Game> games = new ArrayList<>();
+        String[] pgnGames = MULTI_GAME_SPLITTER_PATTERN.split(pgnText);
+        for (String pgnGame : pgnGames) {
+            if (!pgnGame.startsWith("["))
+                pgnGame = "[" + pgnGame;
+
+            games.add(parseSingleGamePGN(pgnGame));
+        }
+
+        return games;
+    }
+
+    public Game parseSingleGamePGN(String pgnText) {
         logger.debug("Parsing PGN: {}", pgnText);
 
         Game game = createNewGame();
@@ -57,7 +75,7 @@ public class PGNParser {
                 Entry<String, String> metadataEntry = parseMetadataLine(line);
                 game.addMeta(metadataEntry.getKey(), metadataEntry.getValue());
             } else
-                sb.append(line);
+                sb.append(line + System.lineSeparator());
         }
 
         String pgn = sb.toString();
@@ -65,12 +83,12 @@ public class PGNParser {
             throw new PGNParseException("Could not find game moves in PGN: " + pgnText);
 
         Colour mover = Colour.White;
-        String[] movesText = pgn.split("[0-9]+\\.");
+        String[] movesText = MOVE_SPLITTER_PATTERN.split(pgn);
         for (String eachMove : movesText) {
             if (StringUtils.isBlank(eachMove))
                 continue;
 
-            String[] halfMoves = eachMove.split(" ");
+            String[] halfMoves = eachMove.split("\\s");
             for (String halfMove : halfMoves) {
                 if (StringUtils.isBlank(halfMove))
                     continue;
@@ -78,6 +96,7 @@ public class PGNParser {
                     break;
 
                 try {
+                    logger.debug("Making move {}...", halfMove);
                     game.makeMove(moveFactory.createMove(mover, halfMove));
                 } catch (IllegalArgumentException e) {
                     logger.error("Error making move: " + halfMove, e);
