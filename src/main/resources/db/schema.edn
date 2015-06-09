@@ -1,0 +1,121 @@
+[{:db/id #db/id[:db.part/db],
+   :db/ident :extraGameMetadata,
+   :db.install/_partition :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :extraGameMetadata/key
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The key for additional information about a game"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :extraGameMetadata/value
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The value for the matching additional key about a game"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db],
+   :db/ident :moves,
+   :db.install/_partition :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :moves/move
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The algebraic notation for a move in the game"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :moves/position
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The FEN position after the current move"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db],
+  :db/ident :games,
+  :db.install/_partition :db.part/db}
+
+{:db/id #db/id[:db.part/db -1]
+  :db/ident :games/result
+  :db/valueType :db.type/ref
+  :db/cardinality :db.cardinality/one
+  :db/doc "A game's result"
+  :db.install/_attribute :db.part/db}
+
+ {:db/id #db/id[:db.part/user -2]
+  :db/ident :games.result/WhiteWins}
+
+ {:db/id #db/id[:db.part/user -3]
+  :db/ident :games.result/BlackWins}
+
+ {:db/id #db/id[:db.part/user -4]
+  :db/ident :games.result/Draw}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/event
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The event in which the game was played"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/site
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The event in which the game was played"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/date
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The date in which the game was played"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/round
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The round in which the game was played"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/white
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The white player in the game"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/black
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The black player in the game"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/fullPgn
+ :db/valueType :db.type/string
+ :db/cardinality :db.cardinality/one
+ :db/doc "The entire PGN for the game"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/additionalInfo
+ :db/valueType :db.type/ref
+ :db/cardinality :db.cardinality/many
+ :db/isComponent true
+ :db/doc "Additional info about the game"
+ :db.install/_attribute :db.part/db}
+
+{:db/id #db/id[:db.part/db]
+ :db/ident :games/moves
+ :db/valueType :db.type/ref
+ :db/cardinality :db.cardinality/many
+ :db/isComponent true
+ :db/doc "The moves and positions through the game"
+ :db.install/_attribute :db.part/db}
+]
