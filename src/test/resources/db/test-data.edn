@@ -1,0 +1,41 @@
+[
+;; additional headers
+{:db/id #db/id[:db.part/user -1], :extraGameMetadata/key "g1key1", :extraGameMetadata/value "g1value1"}
+{:db/id #db/id[:db.part/user -2], :extraGameMetadata/key "g1key2", :extraGameMetadata/value "g1value2"}
+{:db/id #db/id[:db.part/user -3], :extraGameMetadata/key "g2key1", :extraGameMetadata/value "g2value1"}
+{:db/id #db/id[:db.part/user -4], :extraGameMetadata/key "g2key2", :extraGameMetadata/value "g2value2"}
+{:db/id #db/id[:db.part/user -5], :extraGameMetadata/key "g3key1", :extraGameMetadata/value "g3value1"}
+{:db/id #db/id[:db.part/user -6], :extraGameMetadata/key "g3key2", :extraGameMetadata/value "g3value2"}
+
+;; moves and positions
+{:db/id #db/id[:db.part/user -7], :moves/move "g1m1", :moves/position "p123"}
+{:db/id #db/id[:db.part/user -8], :moves/move "g1m2", :moves/position "p456"}
+{:db/id #db/id[:db.part/user -9], :moves/move "g1m3", :moves/position "p789"}
+{:db/id #db/id[:db.part/user -10], :moves/move "g1m4", :moves/position "p012"}
+{:db/id #db/id[:db.part/user -11], :moves/move "g2m1", :moves/position "p345"}
+{:db/id #db/id[:db.part/user -12], :moves/move "g2m2", :moves/position "p678"}
+{:db/id #db/id[:db.part/user -13], :moves/move "g2m3", :moves/position "p901"}
+{:db/id #db/id[:db.part/user -14], :moves/move "g2m4", :moves/position "p234"}
+{:db/id #db/id[:db.part/user -15], :moves/move "g2m5", :moves/position "p567"}
+{:db/id #db/id[:db.part/user -16], :moves/move "g3m1", :moves/position "p890"}
+{:db/id #db/id[:db.part/user -17], :moves/move "g3m2", :moves/position "p123"}
+{:db/id #db/id[:db.part/user -18], :moves/move "g3m3", :moves/position "p456"}
+
+;; game 1
+{:db/id #db/id[:db.part/user -19], :games/event "e1", :games/site "s1", :games/date "d1", :games/round "r1",
+:games/white "w1", :games/black "b1", :games/result :games.result/WhiteWins, :games/additionalInfo
+[#db/id[:db.part/user -1] #db/id[:db.part/user -2]] :games/moves [#db/id[:db.part/user -7] #db/id[:db.part/user -8]
+#db/id[:db.part/user -9] #db/id[:db.part/user -10]]}
+
+;; game 2
+{:db/id #db/id[:db.part/user -20], :games/event "e1", :games/site "s1", :games/date "d1", :games/round "r1",
+:games/white "w2", :games/black "b2", :games/result :games.result/BlackWins, :games/additionalInfo [
+#db/id[:db.part/user -3] #db/id[:db.part/user -4]] :games/moves [#db/id[:db.part/user -11] #db/id[:db.part/user -12]
+#db/id[:db.part/user -13] #db/id[:db.part/user -14] #db/id[:db.part/user -15]]}
+
+;; game 3
+{:db/id #db/id[:db.part/user -21], :games/event "e1", :games/site "s1", :games/date "d2", :games/round "r2",
+:games/white "w2", :games/black "b1", :games/result :games.result/Draw, :games/additionalInfo [
+#db/id[:db.part/user -5] #db/id[:db.part/user -6]] :games/moves [#db/id[:db.part/user -16] #db/id[:db.part/user -17]
+#db/id[:db.part/user -18]]}
+]

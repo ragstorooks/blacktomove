@@ -1,10 +1,9 @@
 package com.ragstorooks.blacktomove.database;
 
-import clojure.lang.Keyword;
-import clojure.lang.Symbol;
 import datomic.Connection;
 import datomic.Peer;
 import datomic.Util;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -23,6 +22,8 @@ import static org.junit.Assert.assertThat;
 
 public class DatomicGameDAOTest {
     private static final String CONNECTION_STRING = "datomic:mem://blacktomove";
+    private static final String SCHEMA_FILE = "src/main/resources/db/schema.edn";
+    private static final String TEST_DATA_FILE = "src/test/resources/db/test-data.edn";
     private static final String QUERY_TO_PULL_GAMES_FROM_DB = "[:find (pull ?g [*]) :where [?g :games/event]]";
 
     private static final String EVENT = "Vugar Gashimov Mem 2015";
@@ -43,7 +44,7 @@ public class DatomicGameDAOTest {
 
     private Game game;
     private Connection connection;
-    private GameDAO gameDAO;
+    private DatomicGameDAO datomicGameDAO;
 
     @Before
     public void setupGame() {
@@ -56,27 +57,48 @@ public class DatomicGameDAOTest {
     public void createDatabaseAndDAO() throws FileNotFoundException, ExecutionException, InterruptedException {
         Peer.createDatabase(CONNECTION_STRING);
         connection = Peer.connect(CONNECTION_STRING);
-        Reader schemaReader = new FileReader("src/main/resources/db/schema.edn");
+        load(SCHEMA_FILE);
+
+        datomicGameDAO = new DatomicGameDAO(CONNECTION_STRING);
+    }
+
+    private void load(String fileName) throws FileNotFoundException, InterruptedException, ExecutionException {
+        Reader schemaReader = new FileReader(fileName);
         List schemaTransaction = (List) Util.readAll(schemaReader).get(0);
         connection.transact(schemaTransaction).get();
+    }
 
-        gameDAO = new DatomicGameDAO(CONNECTION_STRING);
+    @After
+    public void destroyDatabase() {
+        Peer.deleteDatabase(CONNECTION_STRING);
     }
 
     @Test
     public void shouldSaveGame() throws ExecutionException, InterruptedException {
         // act
-        gameDAO.saveGame(game);
+        datomicGameDAO.saveGame(game);
 
         // assert
         Map<String, Object> gameEntity = assertOnlyOneGameInDBAndReturnGameMap();
         assertThatAllRequiredGameHeadersAreSaved(gameEntity);
 
-        Map<String, String> additionalInfoResultsMap = getAdditionalGameHeadersFromDB(gameEntity);
+        Map<String, String> additionalInfoResultsMap = datomicGameDAO.getAdditionalGameHeadersFromDB(gameEntity);
         assertThatAdditionalGameHeadersAreSavedInDB(additionalInfoResultsMap);
 
         List<String> positions = getMovesListFromDB(gameEntity);
         assertThatMovesAreSavedInOrderInDB(positions);
+    }
+
+    @Test
+    public void shouldFindGamesWithSpecificPosition() throws Exception {
+        // setup
+        load(TEST_DATA_FILE);
+
+        // act
+        List<Game> games = datomicGameDAO.findGamesWithPosition("p123");
+
+        // assert
+        assertThat(games.size(), equalTo(2));
     }
 
     private void assertThatMovesAreSavedInOrderInDB(List<String> positions) {
@@ -93,7 +115,7 @@ public class DatomicGameDAOTest {
         List moves = (List) gameEntity.get(":games/moves");
         for (Object item : moves) {
             Map move = (Map) item;
-            movesList.add(move.get(createDatabaseKeyFor("moves/position")).toString());
+            movesList.add(move.get(datomicGameDAO.createDatabaseKeyFor("moves/position")).toString());
         }
         return movesList;
     }
@@ -104,19 +126,6 @@ public class DatomicGameDAOTest {
         assertThat(additionalInfoResultsMap.get(SOURCE_DATE_HEADER), equalTo(SOURCE_DATE_VALUE));
     }
 
-    private Map<String, String> getAdditionalGameHeadersFromDB(Map<String, Object> gameEntity) {
-        Map<String, String> additionalInfoMap = new HashMap<>();
-
-        List additionalInfoEntities = (List) gameEntity.get(":games/additionalInfo");
-        for (Object item : additionalInfoEntities) {
-            Map additionalInfo = (Map) item;
-            additionalInfoMap.put(
-                    additionalInfo.get(createDatabaseKeyFor("extraGameMetadata/key")).toString(),
-                    additionalInfo.get(createDatabaseKeyFor("extraGameMetadata/value")).toString());
-        }
-        return additionalInfoMap;
-    }
-
     private void assertThatAllRequiredGameHeadersAreSaved(Map<String, Object> gameEntity) {
         assertThat(gameEntity.get(":games/event"), equalTo(EVENT));
         assertThat(gameEntity.get(":games/site"), equalTo(SITE));
@@ -125,12 +134,8 @@ public class DatomicGameDAOTest {
         assertThat(gameEntity.get(":games/white"), equalTo(WHITE));
         assertThat(gameEntity.get(":games/black"), equalTo(BLACK));
 
-        Long resultId = (Long) ((Map) gameEntity.get(":games/result")).get(createDatabaseKeyFor("db/id"));
+        Long resultId = (Long) ((Map) gameEntity.get(":games/result")).get(datomicGameDAO.createDatabaseKeyFor("db/id"));
         assertThat(connection.db().entity(resultId).get("db/ident").toString(), equalTo(":games.result/Draw"));
-    }
-
-    private Keyword createDatabaseKeyFor(String field) {
-        return Keyword.intern(Symbol.create(field));
     }
 
     private Map<String, Object> assertOnlyOneGameInDBAndReturnGameMap() {
