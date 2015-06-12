@@ -17,6 +17,7 @@ public class Game {
     private String result;
     private Map<String, String> additionalInfo = new HashMap<>();
     private List<String> positions = new ArrayList<>();
+    private String fullPgn;
 
     public Game(String event, String site, String date, String round, String white, String black, String result) {
         this.event = event;
@@ -35,6 +36,11 @@ public class Game {
 
     public Game addPosition(String position) {
         positions.add(position);
+        return this;
+    }
+
+    public Game setFullPgn(String fullPgn) {
+        this.fullPgn = fullPgn;
         return this;
     }
 
@@ -72,5 +78,9 @@ public class Game {
 
     public Collection<String> getPositions() {
         return Collections.unmodifiableCollection(positions);
+    }
+
+    public String getFullPgn() {
+        return fullPgn;
     }
 }

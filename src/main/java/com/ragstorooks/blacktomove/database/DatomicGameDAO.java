@@ -39,6 +39,7 @@ public class DatomicGameDAO implements GameDAO {
                         "games/round", game.getRound(),
                         "games/white", game.getWhite(),
                         "games/black", game.getBlack(),
+                        "games/fullPgn", game.getFullPgn(),
                         "games/result", GameResult.getDbFormat(game.getResult()),
                         "games/additionalInfo", additionalInfoIds,
                         "games/moves", positionIds));
@@ -90,7 +91,7 @@ public class DatomicGameDAO implements GameDAO {
         Map<String, String> additionalHeaders = getAdditionalGameHeadersFromDB(returnedGame);
         additionalHeaders.entrySet().stream().forEach(entry -> game.addAdditionalInfo(entry.getKey(), entry.getValue()));
 
-        return game;
+        return game.setFullPgn(returnedGame.get(":games/fullPgn").toString());
     }
 
     Map<String, String> getAdditionalGameHeadersFromDB(Map<String, Object> returnedGame) {

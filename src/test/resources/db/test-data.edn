@@ -23,19 +23,19 @@
 
 ;; game 1
 {:db/id #db/id[:db.part/user -19], :games/event "e1", :games/site "s1", :games/date "d1", :games/round "r1",
-:games/white "w1", :games/black "b1", :games/result :games.result/WhiteWins, :games/additionalInfo
-[#db/id[:db.part/user -1] #db/id[:db.part/user -2]] :games/moves [#db/id[:db.part/user -7] #db/id[:db.part/user -8]
-#db/id[:db.part/user -9] #db/id[:db.part/user -10]]}
+:games/white "w1", :games/black "b1", :games/result :games.result/WhiteWins, :games/fullPgn "pgn1",
+:games/additionalInfo [#db/id[:db.part/user -1] #db/id[:db.part/user -2]] :games/moves [#db/id[:db.part/user -7]
+#db/id[:db.part/user -8] #db/id[:db.part/user -9] #db/id[:db.part/user -10]]}
 
 ;; game 2
 {:db/id #db/id[:db.part/user -20], :games/event "e1", :games/site "s1", :games/date "d1", :games/round "r1",
-:games/white "w2", :games/black "b2", :games/result :games.result/BlackWins, :games/additionalInfo [
-#db/id[:db.part/user -3] #db/id[:db.part/user -4]] :games/moves [#db/id[:db.part/user -11] #db/id[:db.part/user -12]
-#db/id[:db.part/user -13] #db/id[:db.part/user -14] #db/id[:db.part/user -15]]}
+:games/white "w2", :games/black "b2", :games/result :games.result/BlackWins, :games/fullPgn "pgn2",
+:games/additionalInfo [#db/id[:db.part/user -3] #db/id[:db.part/user -4]] :games/moves [#db/id[:db.part/user -11]
+#db/id[:db.part/user -12] #db/id[:db.part/user -13] #db/id[:db.part/user -14] #db/id[:db.part/user -15]]}
 
 ;; game 3
 {:db/id #db/id[:db.part/user -21], :games/event "e1", :games/site "s1", :games/date "d2", :games/round "r2",
-:games/white "w2", :games/black "b1", :games/result :games.result/Draw, :games/additionalInfo [
+:games/white "w2", :games/black "b1", :games/result :games.result/Draw, :games/fullPgn "pgn3", :games/additionalInfo [
 #db/id[:db.part/user -5] #db/id[:db.part/user -6]] :games/moves [#db/id[:db.part/user -16] #db/id[:db.part/user -17]
 #db/id[:db.part/user -18]]}
 ]

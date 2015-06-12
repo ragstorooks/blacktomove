@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+import static java.util.Collections.sort;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
@@ -41,6 +42,7 @@ public class DatomicGameDAOTest {
     private static final String SECOND_MOVE = "secondMove";
     private static final String THIRD_MOVE = "thirdMove";
     private static final String FOURTH_MOVE = "fourthMove";
+    private static final String FULL_PGN = "this is the entire pgn string";
 
     private Game game;
     private Connection connection;
@@ -51,6 +53,7 @@ public class DatomicGameDAOTest {
         game = new Game(EVENT, SITE, DATE, ROUND, WHITE, BLACK, RESULT);
         game.addAdditionalInfo(ECO_HEADER, ECO_VALUE).addAdditionalInfo(SOURCE_DATE_HEADER, SOURCE_DATE_VALUE);
         game.addPosition(FIRST_MOVE).addPosition(SECOND_MOVE).addPosition(THIRD_MOVE).addPosition(FOURTH_MOVE);
+        game.setFullPgn(FULL_PGN);
     }
 
     @Before
@@ -87,6 +90,8 @@ public class DatomicGameDAOTest {
 
         List<String> positions = getMovesListFromDB(gameEntity);
         assertThatMovesAreSavedInOrderInDB(positions);
+
+        assertThat(gameEntity.get(":games/fullPgn"), equalTo(FULL_PGN));
     }
 
     @Test
@@ -99,6 +104,9 @@ public class DatomicGameDAOTest {
 
         // assert
         assertThat(games.size(), equalTo(2));
+        sort(games, (g1, g2) -> g1.getFullPgn().compareTo(g2.getFullPgn()));
+        assertThat(games.get(0).getFullPgn(), equalTo("pgn1"));
+        assertThat(games.get(1).getFullPgn(), equalTo("pgn3"));
     }
 
     private void assertThatMovesAreSavedInOrderInDB(List<String> positions) {
