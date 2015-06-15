@@ -11,9 +11,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,7 +38,7 @@ public class PGNParser {
         this.moveFactory = moveFactory;
     }
 
-    public List<Game> parsePGN(File pgnFile) {
+    public Map<String, Game> parsePGN(File pgnFile) {
         logger.info("Parsing PGN file {}, view debug logs for actual pgn", pgnFile);
         try {
             return parseMultiGamePGN(FileUtils.readFileToString(pgnFile, Charset.forName("UTF-8")));
@@ -47,14 +48,14 @@ public class PGNParser {
         }
     }
 
-    public List<Game> parseMultiGamePGN(String pgnText) {
-        List<Game> games = new ArrayList<>();
+    public Map<String, Game> parseMultiGamePGN(String pgnText) {
+        Map<String, Game> games = new HashMap<>();
         String[] pgnGames = MULTI_GAME_SPLITTER_PATTERN.split(pgnText);
         for (String pgnGame : pgnGames) {
             if (!pgnGame.startsWith("["))
                 pgnGame = "[" + pgnGame;
 
-            games.add(parseSingleGamePGN(pgnGame));
+            games.put(pgnGame.trim(), parseSingleGamePGN(pgnGame));
         }
 
         return games;

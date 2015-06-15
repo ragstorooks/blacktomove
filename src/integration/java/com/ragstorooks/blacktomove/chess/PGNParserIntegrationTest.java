@@ -5,7 +5,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -21,11 +20,11 @@ public class PGNParserIntegrationTest {
         String finalFen = "1R5Q/5p2/2p1p1kb/2PpP2p/3Pq1pP/6P1/5P1K/8";
 
         // act
-        List<Game> games = pgnParser.parsePGN(new File("src/integration/resources/anand-nakamura.pgn"));
+        Map<String, Game> games = pgnParser.parsePGN(new File("src/integration/resources/anand-nakamura.pgn"));
 
         // assert
         assertThat(games.size(), equalTo(1));
-        Game game = games.get(0);
+        Game game = games.values().iterator().next();
         assertThat(game.getMetadata(), equalTo(expectedMetadata));
         assertThat(game.getCurrentBoardPosition(), equalTo(finalFen));
     }
@@ -35,13 +34,18 @@ public class PGNParserIntegrationTest {
         // setup
 
         // act
-        List<Game> games = pgnParser.parsePGN(new File("src/integration/resources/shamkir.pgn"));
+        Map<String, Game> games = pgnParser.parsePGN(new File("src/integration/resources/shamkir.pgn"));
 
         // verify number of games and 3 games at random (games 10, 20 and 30 in the file)
-        assertThat(games.size(), equalTo(34));
-        assertThatMetadataAndFinalPositionAreCorrectForAdamsCaruana(games.get(9));
-        assertThatMetadataAndFinalPositionAreCorrectForAdamsMVL(games.get(19));
-        assertThatMetadataAndFinalPositionAreCorrectForSoCarlsen(games.get(29));
+        assertThat(games.size(), equalTo(33));
+        assertThatMetadataAndFinalPositionAreCorrectForAdamsCaruana(getGameForPlayers(games, "Adams", "Caruana"));
+        assertThatMetadataAndFinalPositionAreCorrectForAdamsMVL(getGameForPlayers(games, "Adams", "Vachier"));
+        assertThatMetadataAndFinalPositionAreCorrectForSoCarlsen(getGameForPlayers(games, "So", "Carlsen"));
+    }
+
+    private Game getGameForPlayers(Map<String, Game> games, String white, String black) {
+        return games.entrySet().stream().filter(entry -> entry.getKey().contains("White \"" + white) && entry.getKey()
+                .contains("Black \"" + black)).findFirst().get().getValue();
     }
 
     private void assertThatMetadataAndFinalPositionAreCorrectForSoCarlsen(Game game) {

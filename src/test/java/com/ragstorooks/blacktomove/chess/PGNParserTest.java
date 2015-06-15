@@ -1,8 +1,8 @@
 package com.ragstorooks.blacktomove.chess;
 
 import com.ragstorooks.blacktomove.chess.blocks.Colour;
-import com.ragstorooks.blacktomove.chess.moves.MoveFactory;
 import com.ragstorooks.blacktomove.chess.moves.Move;
+import com.ragstorooks.blacktomove.chess.moves.MoveFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -10,8 +10,11 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.io.File;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -24,10 +27,10 @@ public class PGNParserTest {
     private String simplePgn = "[key1 \"value1\"]" + NEWLINE +
             "[key2 \"value2\"]" + NEWLINE + " " + NEWLINE +
             "1. e4 e5 1/2-1/2";
-    private String multiGamePgn = simplePgn + NEWLINE + NEWLINE +
-            "[2key1 \"2value1\"]" + NEWLINE +
+    private final String secondGamePgn = "[2key1 \"2value1\"]" + NEWLINE +
             "[2key2 \"2value2\"]" + NEWLINE + NEWLINE +
             "1. c4 c5 2. Nc3 1/2-1/2";
+    private String multiGamePgn = simplePgn + NEWLINE + NEWLINE + secondGamePgn;
 
     private AtomicBoolean hasBeenInvoked = new AtomicBoolean(false);
 
@@ -65,11 +68,12 @@ public class PGNParserTest {
         when(moveFactory.createMove(Colour.Black, "e5")).thenReturn(move2);
 
         // act
-        pgnParser.parseSingleGamePGN(simplePgn);
+        Game result = pgnParser.parseSingleGamePGN(simplePgn);
 
         // assert
         verify(game1).makeMove(move1);
         verify(game1).makeMove(move2);
+        assertThat(result, equalTo(game1));
     }
 
     @Test(expected = PGNParseException.class)
@@ -146,7 +150,7 @@ public class PGNParserTest {
         when(moveFactory.createMove(Colour.White, "Nc3")).thenReturn(move5);
 
         // act
-        pgnParser.parseMultiGamePGN(multiGamePgn);
+        Map<String, Game> result = pgnParser.parseMultiGamePGN(multiGamePgn);
 
         // assert
         verify(game1).makeMove(move1);
@@ -154,5 +158,8 @@ public class PGNParserTest {
         verify(game2).makeMove(move3);
         verify(game2).makeMove(move4);
         verify(game2).makeMove(move5);
+        assertThat(result.size(), equalTo(2));
+        assertThat(result.get(simplePgn), equalTo(game1));
+        assertThat(result.get(secondGamePgn), equalTo(game2));
     }
 }
