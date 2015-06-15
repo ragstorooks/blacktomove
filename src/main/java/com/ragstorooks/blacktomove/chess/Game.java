@@ -29,7 +29,7 @@ public class Game implements EnPassantableEventListener {
     private static final Logger logger = LoggerFactory.getLogger(Game.class);
 
     private Map<String, String> metadata = new HashMap<>();
-    private List<Move> moves = new LinkedList<>();
+    private List<String> positions = new LinkedList<>();
     private Board board;
 
     private Map<Colour, CastleOptions> castleOptions = new HashMap<>();
@@ -63,7 +63,7 @@ public class Game implements EnPassantableEventListener {
         if (!isValidMove)
             throw new IllegalArgumentException("Invalid move: " + move);
 
-        moves.add(move);
+        positions.add(getCurrentBoardPosition());
     }
 
     private boolean makeBasicMove(BasicMove move) {
@@ -218,17 +218,17 @@ public class Game implements EnPassantableEventListener {
             return false;
 
         Game game = (Game) obj;
-        return CollectionUtils.isEqualCollection(moves, game.moves) && isMetadataEqual(game.metadata);
+        return CollectionUtils.isEqualCollection(positions, game.positions) && isMetadataEqual(game.metadata);
     }
 
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(7, 9).append(metadata).append(moves).toHashCode();
+        return new HashCodeBuilder(7, 9).append(metadata).append(positions).toHashCode();
     }
 
     @Override
     public String toString() {
-        return new ToStringBuilder(this).append("metadata", metadata).append("moves", moves).toString();
+        return new ToStringBuilder(this).append("metadata", metadata).append("positions", positions).toString();
     }
 
     private static class CastleOptions {
