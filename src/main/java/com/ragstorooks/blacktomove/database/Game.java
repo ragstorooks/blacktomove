@@ -19,7 +19,7 @@ public class Game {
     private List<String> positions = new ArrayList<>();
     private String fullPgn;
 
-    public Game(String event, String site, String date, String round, String white, String black, String result) {
+    protected Game(String event, String site, String date, String round, String white, String black, String result) {
         this.event = event;
         this.site = site;
         this.date = date;
@@ -29,19 +29,16 @@ public class Game {
         this.result = result;
     }
 
-    public Game addAdditionalInfo(String key, String value) {
+    protected void addAdditionalInfo(String key, String value) {
         additionalInfo.put(key, value);
-        return this;
     }
 
-    public Game addPosition(String position) {
+    protected void addPosition(String position) {
         positions.add(position);
-        return this;
     }
 
-    public Game setFullPgn(String fullPgn) {
+    protected void setFullPgn(String fullPgn) {
         this.fullPgn = fullPgn;
-        return this;
     }
 
     public String getEvent() {

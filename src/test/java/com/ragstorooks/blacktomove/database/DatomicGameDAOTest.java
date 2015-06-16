@@ -50,10 +50,12 @@ public class DatomicGameDAOTest {
 
     @Before
     public void setupGame() {
-        game = new Game(EVENT, SITE, DATE, ROUND, WHITE, BLACK, RESULT);
-        game.addAdditionalInfo(ECO_HEADER, ECO_VALUE).addAdditionalInfo(SOURCE_DATE_HEADER, SOURCE_DATE_VALUE);
-        game.addPosition(FIRST_MOVE).addPosition(SECOND_MOVE).addPosition(THIRD_MOVE).addPosition(FOURTH_MOVE);
-        game.setFullPgn(FULL_PGN);
+        GameBuilder gameBuilder = new GameBuilder(EVENT, SITE, DATE, ROUND, WHITE, BLACK, RESULT);
+        gameBuilder.addAdditionalInfo(ECO_HEADER, ECO_VALUE).addAdditionalInfo(SOURCE_DATE_HEADER, SOURCE_DATE_VALUE);
+        gameBuilder.addPosition(FIRST_MOVE).addPosition(SECOND_MOVE).addPosition(THIRD_MOVE).addPosition(FOURTH_MOVE);
+        gameBuilder.setFullPgn(FULL_PGN);
+
+        game = gameBuilder.getGame();
     }
 
     @Before
