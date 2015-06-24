@@ -2,6 +2,9 @@ package com.ragstorooks.blacktomove.database;
 
 import clojure.lang.Keyword;
 import clojure.lang.Symbol;
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
+import com.google.inject.name.Named;
 import datomic.Connection;
 import datomic.Peer;
 import datomic.Util;
@@ -13,6 +16,7 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
+@Singleton
 public class DatomicGameDAO implements GameDAO {
     private static final String FIND_MOVES_WITH_POSITION = "[:find (pull ?m [*]) :in $ ?position :where [?m " +
             ":moves/position ?position]]";
@@ -21,7 +25,8 @@ public class DatomicGameDAO implements GameDAO {
 
     private Connection connection;
 
-    public DatomicGameDAO(String connectionString) {
+    @Inject
+    DatomicGameDAO(@Named("Connection String")String connectionString) {
         connection = Peer.connect(connectionString);
     }
 

@@ -1,5 +1,7 @@
 package com.ragstorooks.blacktomove.service;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.ragstorooks.blacktomove.chess.PGNParser;
 import com.ragstorooks.blacktomove.database.Game;
 import com.ragstorooks.blacktomove.database.GameBuilder;
@@ -20,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
+@Singleton
 @Path("game")
 public class ChessDatabaseService {
     private static final String ERROR_MESSAGE = "Unable to save game to database";
@@ -29,7 +32,8 @@ public class ChessDatabaseService {
     private PGNParser pgnParser;
     private GameDAO gameDAO;
 
-    public ChessDatabaseService(PGNParser pgnParser, GameDAO gameDAO) {
+    @Inject
+    ChessDatabaseService(PGNParser pgnParser, GameDAO gameDAO) {
         this.pgnParser = pgnParser;
         this.gameDAO = gameDAO;
     }

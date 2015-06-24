@@ -1,7 +1,11 @@
 package com.ragstorooks.blacktomove.service;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.google.inject.name.Names;
 import com.ragstorooks.blacktomove.chess.PGNParser;
-import com.ragstorooks.blacktomove.database.DatomicGameDAO;
+import com.ragstorooks.blacktomove.database.DatabaseModule;
 import com.ragstorooks.blacktomove.database.GameDAO;
 import datomic.Connection;
 import datomic.Peer;
@@ -43,10 +47,16 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         connection = Peer.connect(CONNECTION_STRING);
         load(SCHEMA_FILE);
 
-        gameDAO = new DatomicGameDAO(CONNECTION_STRING);
-        pgnParser = new PGNParser();
+        Injector injector = Guice.createInjector(new DatabaseModule(), new AbstractModule() {
+            @Override
+            protected void configure() {
+                bind(String.class).annotatedWith(Names.named("Connection String")).toInstance(CONNECTION_STRING);
+            }
+        });
 
-        chessDatabaseService = new ChessDatabaseService(pgnParser, gameDAO);
+        pgnParser = injector.getInstance(PGNParser.class);
+        gameDAO = injector.getInstance(GameDAO.class);
+        chessDatabaseService = injector.getInstance(ChessDatabaseService.class);
     }
 
     private void load(String fileName) throws FileNotFoundException, InterruptedException, ExecutionException {

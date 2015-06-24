@@ -1,5 +1,7 @@
 package com.ragstorooks.blacktomove.chess;
 
+import com.google.inject.Inject;
+import com.google.inject.Singleton;
 import com.ragstorooks.blacktomove.chess.blocks.Colour;
 import com.ragstorooks.blacktomove.chess.moves.MoveFactory;
 import org.apache.commons.io.FileUtils;
@@ -19,6 +21,7 @@ import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+@Singleton
 public class PGNParser {
     private static final Logger logger = LoggerFactory.getLogger(PGNParser.class);
 
@@ -30,11 +33,8 @@ public class PGNParser {
     private final List<String> results = Arrays.asList("1-0", "0-1", "1/2-1/2");
     private MoveFactory moveFactory;
 
-    public PGNParser() {
-        this(new MoveFactory());
-    }
-
-    public PGNParser(MoveFactory moveFactory) {
+    @Inject
+    PGNParser(MoveFactory moveFactory) {
         this.moveFactory = moveFactory;
     }
 

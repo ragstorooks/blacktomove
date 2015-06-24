@@ -1,5 +1,8 @@
 package com.ragstorooks.blacktomove.chess;
 
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -11,7 +14,13 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 
 public class PGNParserIntegrationTest {
-    private PGNParser pgnParser = new PGNParser();
+    private PGNParser pgnParser;
+
+    @Before
+    public void setup() {
+        Injector injector = Guice.createInjector();
+        pgnParser = injector.getInstance(PGNParser.class);
+    }
 
     @Test
     public void parseSingleGameInPgn() throws IOException {

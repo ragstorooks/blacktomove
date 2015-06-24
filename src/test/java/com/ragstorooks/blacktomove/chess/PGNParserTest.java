@@ -42,7 +42,7 @@ public class PGNParserTest {
     private Game game2;
 
     @InjectMocks
-    private PGNParser pgnParser = new PGNParser() {
+    private PGNParser pgnParser = new PGNParser(moveFactory) {
         @Override
         Game createNewGame() {
             return !hasBeenInvoked.getAndSet(true) ? game1 : game2;

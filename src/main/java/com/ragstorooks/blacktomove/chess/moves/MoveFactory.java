@@ -1,9 +1,13 @@
 package com.ragstorooks.blacktomove.chess.moves;
 
+import com.google.inject.Singleton;
 import com.ragstorooks.blacktomove.chess.blocks.Colour;
 import com.ragstorooks.blacktomove.chess.pieces.PieceType;
 
+@Singleton
 public class MoveFactory {
+    MoveFactory() {}
+
     public Move createMove(Colour mover, String move) {
         move = move.replaceAll("[\\+#]", "");
 
