@@ -173,6 +173,10 @@ public class Game implements EnPassantableEventListener {
         return metadata;
     }
 
+    public List<String> getPositions() {
+        return positions;
+    }
+
     private boolean isInCheck(Board board, Colour colour) {
         String kingLocation = getKing(board, colour).getKey();
         Map<String, Piece> oppositionPieces = board.getPiecesOfColour(Colour.getOppositeColour(colour));
