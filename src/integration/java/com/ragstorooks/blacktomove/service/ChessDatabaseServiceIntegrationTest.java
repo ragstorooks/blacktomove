@@ -35,7 +35,7 @@ import static org.junit.Assert.assertTrue;
 
 public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     private static final String SCHEMA_FILE = "src/main/resources/db/schema.edn";
-    private static final String CONNECTION_STRING = "datomic:mem://blacktomove";
+    private static final String CONNECTION_STRING = "datomic:mem://blacktomove-integration";
 
     private Connection connection;
     private GameDAO gameDAO;
