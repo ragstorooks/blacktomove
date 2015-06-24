@@ -4,9 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.name.Names;
-import com.ragstorooks.blacktomove.chess.PGNParser;
 import com.ragstorooks.blacktomove.database.DatabaseModule;
-import com.ragstorooks.blacktomove.database.GameDAO;
 import datomic.Connection;
 import datomic.Peer;
 import datomic.Util;
@@ -37,31 +35,25 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     private static final String SCHEMA_FILE = "src/main/resources/db/schema.edn";
     private static final String CONNECTION_STRING = "datomic:mem://blacktomove-integration";
 
-    private Connection connection;
-    private GameDAO gameDAO;
-    private PGNParser pgnParser;
-    private ChessDatabaseService chessDatabaseService;
+    private Injector injector;
 
     private void createServiceAndDependencies() throws Exception {
         Peer.createDatabase(CONNECTION_STRING);
-        connection = Peer.connect(CONNECTION_STRING);
         load(SCHEMA_FILE);
 
-        Injector injector = Guice.createInjector(new DatabaseModule(), new AbstractModule() {
+        injector = Guice.createInjector(new DatabaseModule(), new AbstractModule() {
             @Override
             protected void configure() {
                 bind(String.class).annotatedWith(Names.named("Connection String")).toInstance(CONNECTION_STRING);
             }
         });
-
-        pgnParser = injector.getInstance(PGNParser.class);
-        gameDAO = injector.getInstance(GameDAO.class);
-        chessDatabaseService = injector.getInstance(ChessDatabaseService.class);
     }
 
     private void load(String fileName) throws FileNotFoundException, InterruptedException, ExecutionException {
         Reader schemaReader = new FileReader(fileName);
         List schemaTransaction = (List) Util.readAll(schemaReader).get(0);
+
+        Connection connection = Peer.connect(CONNECTION_STRING);
         connection.transact(schemaTransaction).get();
     }
 
@@ -77,8 +69,8 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
             @Override
             public Set<Object> getSingletons() {
                 Set<Object> singletons = new HashSet<>();
-                singletons.add(chessDatabaseService);
-                singletons.add(new ObjectMapperResolver());
+                singletons.add(injector.getInstance(ChessDatabaseService.class));
+                singletons.add(injector.getInstance(ObjectMapperResolver.class));
                 singletons.add(new JacksonFeature());
                 return singletons;
             }
