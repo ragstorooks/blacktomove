@@ -80,7 +80,7 @@ public class DatomicGameDAO implements GameDAO {
     }
 
     private Game mapDbGameToGame(Map<String, Object> returnedGame) {
-        Game game = new Game(returnedGame.get(":games/event").toString(),
+        GameBuilder gameBuilder = new GameBuilder(returnedGame.get(":games/event").toString(),
                 returnedGame.get(":games/site").toString(),
                 returnedGame.get(":games/date").toString(),
                 returnedGame.get(":games/round").toString(),
@@ -89,9 +89,10 @@ public class DatomicGameDAO implements GameDAO {
                 convertGameResultEnum((Map) returnedGame.get(":games/result")));
 
         Map<String, String> additionalHeaders = getAdditionalGameHeadersFromDB(returnedGame);
-        additionalHeaders.entrySet().stream().forEach(entry -> game.addAdditionalInfo(entry.getKey(), entry.getValue()));
+        additionalHeaders.entrySet().stream().forEach(entry -> gameBuilder.addAdditionalInfo(entry.getKey(), entry.getValue
+                ()));
 
-        return game.setFullPgn(returnedGame.get(":games/fullPgn").toString());
+        return gameBuilder.setFullPgn(returnedGame.get(":games/fullPgn").toString()).getGame();
     }
 
     Map<String, String> getAdditionalGameHeadersFromDB(Map<String, Object> returnedGame) {
