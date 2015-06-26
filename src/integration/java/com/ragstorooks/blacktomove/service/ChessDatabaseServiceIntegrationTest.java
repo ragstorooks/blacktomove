@@ -15,6 +15,8 @@ import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -78,7 +80,22 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     }
 
     @Test
-    public void testThatASingleGameIsSavedIntoTheDatabase() throws UnsupportedEncodingException {
+    public void testThatASingleGameIsSavedIntoTheDatabaseAndTheRightUrlIsReturned() throws
+            UnsupportedEncodingException {
+        // setup
+        String pgn = loadPgnForAnandNakamura();
+
+        // save game & then find position
+        Response response = target("game/pgn").request().post(Entity.text(pgn));
+        assertThat(response.getStatus(), equalTo(Status.CREATED.getStatusCode()));
+
+        String url = response.readEntity(GameList.class).games.get(0);
+        String result = target(url).request().get(String.class);
+        assertThat(result, equalTo(pgn.trim()));
+    }
+
+    @Test
+    public void testThatASingleGameIsSavedIntoTheDatabaseAndSearchableByPosition() throws UnsupportedEncodingException {
         // setup
         String pgn = loadPgnForAnandNakamura();
         String finalPosition = URLEncoder.encode("1R5Q/5p2/2p1p1kb/2PpP2p/3Pq1pP/6P1/5P1K/8", "UTF-8");

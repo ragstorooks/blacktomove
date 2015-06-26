@@ -13,12 +13,14 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static java.util.Collections.sort;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 public class DatomicGameDAOTest {
@@ -81,19 +83,23 @@ public class DatomicGameDAOTest {
     @Test
     public void shouldSaveGame() throws ExecutionException, InterruptedException {
         // act
-        datomicGameDAO.saveGame(game);
+        Long result = datomicGameDAO.saveGame(game);
 
         // assert
+        assertNotNull(result);
+
         Map<String, Object> gameEntity = assertOnlyOneGameInDBAndReturnGameMap();
         assertThatAllRequiredGameHeadersAreSaved(gameEntity);
 
-        Map<String, String> additionalInfoResultsMap = datomicGameDAO.getAdditionalGameHeadersFromDB(gameEntity);
+        Map<String, String> additionalInfoResultsMap = datomicGameDAO.getAdditionalGameHeadersFromDB((Collection)
+                gameEntity.get(":games/additionalInfo"));
         assertThatAdditionalGameHeadersAreSavedInDB(additionalInfoResultsMap);
 
         List<String> positions = getMovesListFromDB(gameEntity);
         assertThatMovesAreSavedInOrderInDB(positions);
 
         assertThat(gameEntity.get(":games/fullPgn"), equalTo(FULL_PGN));
+        assertThat(gameEntity.get(":db/id"), equalTo(result));
     }
 
     @Test
@@ -109,6 +115,19 @@ public class DatomicGameDAOTest {
         sort(games, (g1, g2) -> g1.getFullPgn().compareTo(g2.getFullPgn()));
         assertThat(games.get(0).getFullPgn(), equalTo("pgn1"));
         assertThat(games.get(1).getFullPgn(), equalTo("pgn3"));
+    }
+
+    @Test
+    public void shouldFindGameById() throws Exception {
+        // setup
+        load(TEST_DATA_FILE);
+        String id = getGameWithPgn("pgn2").get(":db/id").toString();
+
+        // act
+        Game game = datomicGameDAO.findGameById(id);
+
+        // assert
+        assertThat(game.getFullPgn(), equalTo("pgn2"));
     }
 
     private void assertThatMovesAreSavedInOrderInDB(List<String> positions) {
@@ -149,12 +168,28 @@ public class DatomicGameDAOTest {
     }
 
     private Map<String, Object> assertOnlyOneGameInDBAndReturnGameMap() {
-        Collection results = Peer.query(QUERY_TO_PULL_GAMES_FROM_DB, connection.db());
-        assertThat(results.size(), equalTo(1));
-        Map<?, ?> gameEntity = (Map<?, ?>) ((List) results.iterator().next()).get(0);
+        List<Map<String, Object>> allGamesFromDB = getAllGamesFromDBAndReturnListOfGameMaps();
+        assertThat(allGamesFromDB.size(), equalTo(1));
+        return allGamesFromDB.get(0);
+    }
 
-        Map<String, Object> result = new HashMap<>();
-        gameEntity.entrySet().stream().forEach(entry -> result.put(entry.getKey().toString(), entry.getValue()));
+    private Map<String, Object> getGameWithPgn(String pgn) {
+        List<Map<String, Object>> allGamesFromDB = getAllGamesFromDBAndReturnListOfGameMaps();
+        return allGamesFromDB.stream().filter(map -> map.get(":games/fullPgn").equals(pgn)).findFirst().get();
+    }
+
+    private List<Map<String, Object>> getAllGamesFromDBAndReturnListOfGameMaps() {
+        List<Map<String, Object>> result = new ArrayList<>();
+
+        Collection results = Peer.query(QUERY_TO_PULL_GAMES_FROM_DB, connection.db());
+        Iterator iterator = results.iterator();
+        while (iterator.hasNext()) {
+            Map<?, ?> gameEntity = (Map<?, ?>) ((List) iterator.next()).get(0);
+            Map<String, Object> map = new HashMap<>();
+            gameEntity.entrySet().stream().forEach(entry -> map.put(entry.getKey().toString(), entry.getValue()));
+
+            result.add(map);
+        }
         return result;
     }
 }

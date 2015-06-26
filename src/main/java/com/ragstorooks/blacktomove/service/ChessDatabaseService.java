@@ -41,12 +41,15 @@ public class ChessDatabaseService {
     @POST
     @Path("/pgn")
     @Consumes(MediaType.TEXT_PLAIN)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response saveGamesWithPgn(String pgn) {
         logger.info("Parsing pgn and saving games");
+        List<String> gameIds = new ArrayList<>();
         Map<String, com.ragstorooks.blacktomove.chess.Game> games = pgnParser.parseMultiGamePGN(pgn);
         games.entrySet().stream().forEach(game -> {
             try {
-                gameDAO.saveGame(convertToDatabaseObject(game.getKey(), game.getValue()));
+                Long gameId = gameDAO.saveGame(convertToDatabaseObject(game.getKey(), game.getValue()));
+                gameIds.add("game/id/" + gameId);
             } catch (ExecutionException e) {
                 logger.error(ERROR_MESSAGE, e);
             } catch (InterruptedException e) {
@@ -54,7 +57,8 @@ public class ChessDatabaseService {
             }
         });
 
-        return null;
+        GameList gameList = new GameList(gameIds);
+        return Response.ok(gameList).status(Response.Status.CREATED).build();
     }
 
     @GET
@@ -68,6 +72,16 @@ public class ChessDatabaseService {
 
         logger.info("Found {} games with position {}", pgns.size(), position);
         return new GameList(pgns);
+    }
+
+    @GET
+    @Path("/id/{id}")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String findGameById(@PathParam("id") String id) {
+        logger.info("Finding game with position {}", id);
+
+        Game game = gameDAO.findGameById(id);
+        return game.getFullPgn();
     }
 
     private Game convertToDatabaseObject(String pgn, com.ragstorooks.blacktomove.chess.Game game) {

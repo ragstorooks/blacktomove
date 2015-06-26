@@ -6,10 +6,13 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 import datomic.Connection;
+import datomic.Entity;
 import datomic.Peer;
 import datomic.Util;
+import datomic.query.EntityMap;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +25,7 @@ public class DatomicGameDAO implements GameDAO {
             ":moves/position ?position]]";
     private static final String FIND_GAMES_WITH_MOVE = "[:find (pull ?g [*]) :in $ [?m ...] :where [?g " +
             ":games/moves ?m]]";
+    private static final String FIND_GAMES_WITH_ID = "[:find (pull ?g [*]) :where [?g :games/id ?i]]";
 
     private Connection connection;
 
@@ -30,14 +34,16 @@ public class DatomicGameDAO implements GameDAO {
         connection = Peer.connect(connectionString);
     }
 
-    public Map saveGame(Game game) throws ExecutionException, InterruptedException {
+    @Override
+    public Long saveGame(Game game) throws ExecutionException, InterruptedException {
         List<Map> saveGameTransaction = new ArrayList<>();
 
         List additionalInfoIds = populateAdditionalInfo(game, saveGameTransaction);
         List positionIds = populatePositions(game, saveGameTransaction);
 
+        Object gameTempId = Peer.tempid(":games");
         saveGameTransaction.add(
-                Util.map(":db/id", Peer.tempid(":games"),
+                Util.map(":db/id", gameTempId,
                         "games/event", game.getEvent(),
                         "games/site", game.getSite(),
                         "games/date", game.getDate(),
@@ -48,9 +54,17 @@ public class DatomicGameDAO implements GameDAO {
                         "games/result", GameResult.getDbFormat(game.getResult()),
                         "games/additionalInfo", additionalInfoIds,
                         "games/moves", positionIds));
-        return connection.transact(saveGameTransaction).get();
+
+        Map<Object, Object> transactionData = connection.transact(saveGameTransaction).get();
+        Map<Object, String> tempIds = (Map<Object, String>) transactionData.get(createDatabaseKeyFor("tempids"));
+        System.out.println("gameTempId = " + gameTempId);
+
+        Long gameId = (Long) Peer.resolveTempid(connection.db(), tempIds, gameTempId);
+
+        return gameId;
     }
 
+    @Override
     public List<Game> findGamesWithPosition(String position) {
         List<Game> result = new ArrayList<>();
 
@@ -61,6 +75,16 @@ public class DatomicGameDAO implements GameDAO {
         }
 
         return result;
+    }
+
+    @Override
+    public Game findGameById(String id) {
+        Map<String, Object> entityMap = new HashMap<>();
+
+        Entity entity = connection.db().entity(Long.parseLong(id));
+        entity.keySet().stream().forEach(key -> entityMap.put(key.toString(), entity.get(key)));
+
+        return mapDbGameToGame(entityMap);
     }
 
     private Game convertToGame(List gameWithPosition) {
@@ -85,31 +109,45 @@ public class DatomicGameDAO implements GameDAO {
     }
 
     private Game mapDbGameToGame(Map<String, Object> returnedGame) {
+        String result = getResult(returnedGame.get(":games/result"));
         GameBuilder gameBuilder = new GameBuilder(returnedGame.get(":games/event").toString(),
                 returnedGame.get(":games/site").toString(),
                 returnedGame.get(":games/date").toString(),
                 returnedGame.get(":games/round").toString(),
                 returnedGame.get(":games/white").toString(),
                 returnedGame.get(":games/black").toString(),
-                convertGameResultEnum((Map) returnedGame.get(":games/result")));
+                result);
 
-        Map<String, String> additionalHeaders = getAdditionalGameHeadersFromDB(returnedGame);
+        Map<String, String> additionalHeaders = getAdditionalGameHeadersFromDB((Collection) returnedGame.get
+                (":games/additionalInfo"));
         additionalHeaders.entrySet().stream().forEach(entry -> gameBuilder.addAdditionalInfo(entry.getKey(), entry.getValue
                 ()));
 
         return gameBuilder.setFullPgn(returnedGame.get(":games/fullPgn").toString()).getGame();
     }
 
-    Map<String, String> getAdditionalGameHeadersFromDB(Map<String, Object> returnedGame) {
+    private String getResult(Object resultEnum) {
+        return resultEnum instanceof Map? convertGameResultEnum((Map) resultEnum) : GameResult.getPgnFormat
+                (resultEnum.toString());
+    }
+
+    Map<String, String> getAdditionalGameHeadersFromDB(Collection additionalInfoEntities) {
         Map<String, String> additionalInfoMap = new HashMap<>();
 
-        List additionalInfoEntities = (List) returnedGame.get(":games/additionalInfo");
-        for (Object item : additionalInfoEntities) {
-            Map additionalInfo = (Map) item;
-            additionalInfoMap.put(
-                    additionalInfo.get(createDatabaseKeyFor("extraGameMetadata/key")).toString(),
-                    additionalInfo.get(createDatabaseKeyFor("extraGameMetadata/value")).toString());
-        }
+        additionalInfoEntities.stream().forEach(entity -> {
+            if (entity instanceof Map) {
+                Map entityMap = (Map) entity;
+                additionalInfoMap.put(
+                        entityMap.get(createDatabaseKeyFor("extraGameMetadata/key")).toString(),
+                        entityMap.get(createDatabaseKeyFor("extraGameMetadata/value")).toString());
+            } else {
+                EntityMap entityMap = (EntityMap) entity;
+                additionalInfoMap.put(
+                        entityMap.get(createDatabaseKeyFor("extraGameMetadata/key")).toString(),
+                        entityMap.get(createDatabaseKeyFor("extraGameMetadata/value")).toString());
+            }
+        });
+
         return additionalInfoMap;
     }
 
