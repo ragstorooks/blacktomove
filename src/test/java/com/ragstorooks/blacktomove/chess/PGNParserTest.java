@@ -9,7 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.File;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -112,15 +111,6 @@ public class PGNParserTest {
 
         // act
         pgnParser.parseSingleGamePGN(simplePgn);
-    }
-
-    @Test(expected = PGNParseException.class)
-    public void testThatAnIOExceptionWhileReadingFileThrowsParseException() {
-        // setup
-        File file = mock(File.class);
-
-        // act
-        pgnParser.parsePGN(file);
     }
 
     @Test

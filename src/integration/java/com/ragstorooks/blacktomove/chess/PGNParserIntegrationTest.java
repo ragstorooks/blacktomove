@@ -2,11 +2,13 @@ package com.ragstorooks.blacktomove.chess;
 
 import com.google.inject.Guice;
 import com.google.inject.Injector;
+import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +31,8 @@ public class PGNParserIntegrationTest {
         String finalFen = "1R5Q/5p2/2p1p1kb/2PpP2p/3Pq1pP/6P1/5P1K/8";
 
         // act
-        Map<String, Game> games = pgnParser.parsePGN(new File("src/integration/resources/anand-nakamura.pgn"));
+        Map<String, Game> games = pgnParser.parseMultiGamePGN(FileUtils.readFileToString(new File
+                ("src/integration/resources/anand-nakamura.pgn"), Charset.forName("UTF-8")));
 
         // assert
         assertThat(games.size(), equalTo(1));
@@ -43,7 +46,8 @@ public class PGNParserIntegrationTest {
         // setup
 
         // act
-        Map<String, Game> games = pgnParser.parsePGN(new File("src/integration/resources/shamkir.pgn"));
+        Map<String, Game> games = pgnParser.parseMultiGamePGN(FileUtils.readFileToString(new File
+                ("src/integration/resources/shamkir.pgn"), Charset.forName("UTF-8")));
 
         // verify number of games and 3 games at random (games 10, 20 and 30 in the file)
         assertThat(games.size(), equalTo(33));

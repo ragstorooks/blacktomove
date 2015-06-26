@@ -4,14 +4,10 @@ import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.ragstorooks.blacktomove.chess.blocks.Colour;
 import com.ragstorooks.blacktomove.chess.moves.MoveFactory;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.Charset;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -36,16 +32,6 @@ public class PGNParser {
     @Inject
     PGNParser(MoveFactory moveFactory) {
         this.moveFactory = moveFactory;
-    }
-
-    public Map<String, Game> parsePGN(File pgnFile) {
-        logger.info("Parsing PGN file {}, view debug logs for actual pgn", pgnFile);
-        try {
-            return parseMultiGamePGN(FileUtils.readFileToString(pgnFile, Charset.forName("UTF-8")));
-        } catch (IOException e) {
-            logger.error("Unable to read file to parse pgn", e);
-            throw new PGNParseException(e);
-        }
     }
 
     public Map<String, Game> parseMultiGamePGN(String pgnText) {
