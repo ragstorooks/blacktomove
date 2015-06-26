@@ -22,7 +22,6 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
@@ -80,8 +79,7 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     }
 
     @Test
-    public void testThatASingleGameIsSavedIntoTheDatabaseAndTheRightUrlIsReturned() throws
-            UnsupportedEncodingException {
+    public void testThatASingleGameIsSavedIntoTheDatabaseAndTheRightUrlIsReturned() throws Exception {
         // setup
         String pgn = loadPgnForAnandNakamura();
 
@@ -95,7 +93,7 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     }
 
     @Test
-    public void testThatASingleGameIsSavedIntoTheDatabaseAndSearchableByPosition() throws UnsupportedEncodingException {
+    public void testThatASingleGameIsSavedIntoTheDatabaseAndSearchableByPosition() throws   Exception {
         // setup
         String pgn = loadPgnForAnandNakamura();
         String finalPosition = URLEncoder.encode("1R5Q/5p2/2p1p1kb/2PpP2p/3Pq1pP/6P1/5P1K/8", "UTF-8");
