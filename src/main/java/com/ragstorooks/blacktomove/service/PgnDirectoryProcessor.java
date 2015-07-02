@@ -18,18 +18,21 @@ public class PgnDirectoryProcessor implements Runnable {
 
     private File inDirectory;
     private File outDirectory;
+    private File errorsDirectory;
 
     private ChessDatabaseService chessDatabaseService;
 
     @Inject
     PgnDirectoryProcessor(@Named("Input Dir") String inDirectory, @Named("Output Dir") String outDirectory,
-                          ChessDatabaseService chessDatabaseService) {
+                          @Named("Errors Dir") String errorsDirectory, ChessDatabaseService chessDatabaseService) {
         this.inDirectory = new File(inDirectory);
         this.outDirectory = new File(outDirectory);
+        this.errorsDirectory = new File(errorsDirectory);
         this.chessDatabaseService = chessDatabaseService;
 
-        if (!this.inDirectory.isDirectory() || !this.outDirectory.isDirectory()) {
-            logger.error("in-dir {} and out-dir {} need to be valid directories", inDirectory, outDirectory);
+        if (!this.inDirectory.isDirectory() || !this.outDirectory.isDirectory() || !this.errorsDirectory.isDirectory()) {
+            logger.error("in-dir {}, out-dir {} and errors-dir {} need to be valid directories", inDirectory,
+                    outDirectory, errorsDirectory);
             throw new IllegalArgumentException(inDirectory + " and " + outDirectory + " need to be valid directories");
         }
     }
@@ -45,8 +48,10 @@ public class PgnDirectoryProcessor implements Runnable {
                 if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
                     logger.info("Processed all games in file {}", file);
                     FileUtils.moveFileToDirectory(file, outDirectory, false);
-                } else
+                } else {
                     logger.warn("Couldn't save all games in file {}, response status {}", file, response.getStatus());
+                    FileUtils.moveFileToDirectory(file, errorsDirectory, false);
+                }
             } catch (IOException e) {
                 logger.error("Unable to read file " + file + ", skipping...", e);
             }
