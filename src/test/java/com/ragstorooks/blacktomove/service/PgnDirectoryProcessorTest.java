@@ -25,9 +25,13 @@ public class PgnDirectoryProcessorTest {
     private static final String OUT_DIRECTORY = TMP_DIRECTORY + "out-processor";
     private static final String ERRORS_DIRECTORY = TMP_DIRECTORY + "errors-processor";
 
-    private String pgn1 = "pgn1";
-    private String pgn2 = "pgn2";
-    private String pgn3 = "pgn3";
+    private static final String NEWLINE = System.lineSeparator();
+    private String pgn1 = "[key1 \"value1\"]" + NEWLINE + "[key2 \"value2\"]" + NEWLINE + " " + NEWLINE +
+            "1. e4 e5 1/2-1/2";
+    private String pgn2 = "[2key1 \"2value1\"]" + NEWLINE + "[2key2 \"2value2\"]" + NEWLINE + NEWLINE +
+            "1. c4 c5 2. Nc3 1-0";
+    private String pgn3 = "[3key1 \"3value1\"]" + NEWLINE + "[3key2 \"3value2\"]" + NEWLINE + NEWLINE +
+            "1. e4 c5 2. Nc3 0-1";
 
     private File inFile1;
     private File inFile2;
@@ -53,9 +57,9 @@ public class PgnDirectoryProcessorTest {
 
     @Before
     public void setupChessDatabaseService() {
-        when(chessDatabaseService.saveGamesWithPgn(pgn1)).thenReturn(Response.created(null).build());
-        when(chessDatabaseService.saveGamesWithPgn(pgn2)).thenReturn(Response.created(null).build());
-        when(chessDatabaseService.saveGamesWithPgn(pgn3)).thenReturn(Response.created(null).build());
+        when(chessDatabaseService.savePgn(pgn1)).thenReturn(Response.created(null).build());
+        when(chessDatabaseService.savePgn(pgn2)).thenReturn(Response.created(null).build());
+        when(chessDatabaseService.savePgn(pgn3)).thenReturn(Response.created(null).build());
     }
 
     @Before
@@ -77,9 +81,9 @@ public class PgnDirectoryProcessorTest {
         pgnDirectoryProcessor.run();
 
         // assert
-        verify(chessDatabaseService).saveGamesWithPgn(pgn1);
-        verify(chessDatabaseService).saveGamesWithPgn(pgn2);
-        verify(chessDatabaseService).saveGamesWithPgn(pgn3);
+        verify(chessDatabaseService).savePgn(pgn1);
+        verify(chessDatabaseService).savePgn(pgn2);
+        verify(chessDatabaseService).savePgn(pgn3);
 
         assertFalse(inFile1.exists());
         assertFalse(inFile2.exists());
@@ -106,7 +110,7 @@ public class PgnDirectoryProcessorTest {
     @Test
     public void testThatOnlyFilesWithNoErrorsAreMovedToOutDirectory() throws IOException {
         // setup
-        when(chessDatabaseService.saveGamesWithPgn(pgn2)).thenReturn(Response.serverError().build());
+        when(chessDatabaseService.savePgn(pgn2)).thenReturn(Response.serverError().build());
 
         // act
         pgnDirectoryProcessor.run();
@@ -123,7 +127,7 @@ public class PgnDirectoryProcessorTest {
     @Test
     public void testThatFilesWithErrorsAreMovedToErrorsDirectory() throws IOException {
         // setup
-        when(chessDatabaseService.saveGamesWithPgn(pgn2)).thenReturn(Response.serverError().build());
+        when(chessDatabaseService.savePgn(pgn2)).thenReturn(Response.serverError().build());
 
         // act
         pgnDirectoryProcessor.run();
@@ -134,5 +138,32 @@ public class PgnDirectoryProcessorTest {
 
         assertFalse(new File(ERRORS_DIRECTORY + File.separator + "1.pgn").exists());
         assertFalse(new File(ERRORS_DIRECTORY + File.separator + "3.pgn").exists());
+    }
+
+    @Test
+    public void testThatMultipleGamesAreParsedAndProcessedFromASingleFile() throws IOException {
+        // setup
+        deleteFiles(inFile1, inFile2, inFile3);
+
+        String multiGamePgn = pgn1 + NEWLINE + NEWLINE + pgn2 + NEWLINE + NEWLINE + pgn3;
+        File multiGameFile = new File(IN_DIRECTORY + File.separator + "m.pgn");
+        FileUtils.write(multiGameFile, multiGamePgn);
+
+        // act
+        pgnDirectoryProcessor.run();
+
+        // assert
+        verify(chessDatabaseService).savePgn(pgn1);
+        verify(chessDatabaseService).savePgn(pgn2);
+        verify(chessDatabaseService).savePgn(pgn3);
+
+        assertFalse(multiGameFile.exists());
+        assertThat(FileUtils.readFileToString(new File(OUT_DIRECTORY + File.separator + "m.pgn")), equalTo
+                (multiGamePgn));
+    }
+
+    private void deleteFiles(File... files) {
+        for (File f : files)
+            f.delete();
     }
 }

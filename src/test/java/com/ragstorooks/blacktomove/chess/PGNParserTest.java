@@ -9,9 +9,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicBoolean;
-
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Mockito.doThrow;
@@ -26,36 +23,28 @@ public class PGNParserTest {
     private String simplePgn = "[key1 \"value1\"]" + NEWLINE +
             "[key2 \"value2\"]" + NEWLINE + " " + NEWLINE +
             "1. e4 e5 1/2-1/2";
-    private final String secondGamePgn = "[2key1 \"2value1\"]" + NEWLINE +
-            "[2key2 \"2value2\"]" + NEWLINE + NEWLINE +
-            "1. c4 c5 2. Nc3 1/2-1/2";
-    private String multiGamePgn = simplePgn + NEWLINE + NEWLINE + secondGamePgn;
-
-    private AtomicBoolean hasBeenInvoked = new AtomicBoolean(false);
 
     @Mock
     private MoveFactory moveFactory;
     @Mock
-    private Game game1;
-    @Mock
-    private Game game2;
+    private Game game;
 
     @InjectMocks
     private PGNParser pgnParser = new PGNParser(moveFactory) {
         @Override
         Game createNewGame() {
-            return !hasBeenInvoked.getAndSet(true) ? game1 : game2;
+            return game;
         }
     };
 
     @Test
     public void testThatGameMetadataIsParsed() {
         // act
-        pgnParser.parseSingleGamePGN(simplePgn);
+        pgnParser.parsePGN(simplePgn);
 
         // assert
-        verify(game1).addMeta("key1", "value1");
-        verify(game1).addMeta("key2", "value2");
+        verify(game).addMeta("key1", "value1");
+        verify(game).addMeta("key2", "value2");
     }
 
     @Test
@@ -67,12 +56,12 @@ public class PGNParserTest {
         when(moveFactory.createMove(Colour.Black, "e5")).thenReturn(move2);
 
         // act
-        Game result = pgnParser.parseSingleGamePGN(simplePgn);
+        Game result = pgnParser.parsePGN(simplePgn);
 
         // assert
-        verify(game1).makeMove(move1);
-        verify(game1).makeMove(move2);
-        assertThat(result, equalTo(game1));
+        verify(game).makeMove(move1);
+        verify(game).makeMove(move2);
+        assertThat(result, equalTo(game));
     }
 
     @Test(expected = PGNParseException.class)
@@ -81,7 +70,7 @@ public class PGNParserTest {
         simplePgn = simplePgn.replace("\"value2\"", "\"value2");
 
         // act
-        pgnParser.parseSingleGamePGN(simplePgn);
+        pgnParser.parsePGN(simplePgn);
     }
 
     @Test(expected = PGNParseException.class)
@@ -90,7 +79,7 @@ public class PGNParserTest {
         simplePgn = simplePgn.replace("key2 \"value2\"", "key2\"value2\"");
 
         // act
-        pgnParser.parseSingleGamePGN(simplePgn);
+        pgnParser.parsePGN(simplePgn);
     }
 
     @Test(expected = PGNParseException.class)
@@ -99,7 +88,7 @@ public class PGNParserTest {
         simplePgn = simplePgn.replaceAll("1. e4.*$", "");
 
         // act
-        pgnParser.parseSingleGamePGN(simplePgn);
+        pgnParser.parsePGN(simplePgn);
     }
 
     @Test(expected = PGNParseException.class)
@@ -107,49 +96,9 @@ public class PGNParserTest {
         // setup
         Move move1 = mock(Move.class);
         when(moveFactory.createMove(Colour.White, "e4")).thenReturn(move1);
-        doThrow(new IllegalArgumentException()).when(game1).makeMove(move1);
+        doThrow(new IllegalArgumentException()).when(game).makeMove(move1);
 
         // act
-        pgnParser.parseSingleGamePGN(simplePgn);
-    }
-
-    @Test
-    public void testThatGameMetadataIsParsedForMultipleGames() {
-        // act
-        pgnParser.parseMultiGamePGN(multiGamePgn);
-
-        // assert
-        verify(game1).addMeta("key1", "value1");
-        verify(game1).addMeta("key2", "value2");
-        verify(game2).addMeta("2key1", "2value1");
-        verify(game2).addMeta("2key2", "2value2");
-    }
-
-    @Test
-    public void testThatMultiGameScoreIsParsed() {
-        // setup
-        Move move1 = mock(Move.class);
-        Move move2 = mock(Move.class);
-        Move move3 = mock(Move.class);
-        Move move4 = mock(Move.class);
-        Move move5 = mock(Move.class);
-        when(moveFactory.createMove(Colour.White, "e4")).thenReturn(move1);
-        when(moveFactory.createMove(Colour.Black, "e5")).thenReturn(move2);
-        when(moveFactory.createMove(Colour.White, "c4")).thenReturn(move3);
-        when(moveFactory.createMove(Colour.Black, "c5")).thenReturn(move4);
-        when(moveFactory.createMove(Colour.White, "Nc3")).thenReturn(move5);
-
-        // act
-        Map<String, Game> result = pgnParser.parseMultiGamePGN(multiGamePgn);
-
-        // assert
-        verify(game1).makeMove(move1);
-        verify(game1).makeMove(move2);
-        verify(game2).makeMove(move3);
-        verify(game2).makeMove(move4);
-        verify(game2).makeMove(move5);
-        assertThat(result.size(), equalTo(2));
-        assertThat(result.get(simplePgn), equalTo(game1));
-        assertThat(result.get(secondGamePgn), equalTo(game2));
+        pgnParser.parsePGN(simplePgn);
     }
 }

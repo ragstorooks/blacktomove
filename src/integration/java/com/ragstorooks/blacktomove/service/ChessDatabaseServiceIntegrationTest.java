@@ -11,6 +11,8 @@ import datomic.Util;
 import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.test.JerseyTest;
+import org.junit.AfterClass;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.ws.rs.client.Entity;
@@ -33,10 +35,30 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
 public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
+    private static final String TMP_DIRECTORY = System.getProperty("java.io.tmpdir") + File.separator;
+    private static final String IN_DIRECTORY = TMP_DIRECTORY + "in-processor";
+    private static final String OUT_DIRECTORY = TMP_DIRECTORY + "out-processor";
+    private static final String ERRORS_DIRECTORY = TMP_DIRECTORY + "errors-processor";
+
     private static final String SCHEMA_FILE = "src/main/resources/db/schema.edn";
     private static final String CONNECTION_STRING = "datomic:mem://blacktomove-integration";
 
+    private PgnDirectoryProcessor pgnDirectoryProcessor;
     private Injector injector;
+
+    @BeforeClass
+    public static void setupInAndOutDirectories() throws IOException {
+        FileUtils.forceMkdir(new File(IN_DIRECTORY));
+        FileUtils.forceMkdir(new File(OUT_DIRECTORY));
+        FileUtils.forceMkdir(new File(ERRORS_DIRECTORY));
+    }
+
+    @AfterClass
+    public static void deleteDirectories() throws IOException {
+        FileUtils.deleteDirectory(new File(IN_DIRECTORY));
+        FileUtils.deleteDirectory(new File(OUT_DIRECTORY));
+        FileUtils.deleteDirectory(new File(ERRORS_DIRECTORY));
+    }
 
     private void createServiceAndDependencies() throws Exception {
         Peer.createDatabase(CONNECTION_STRING);
@@ -46,8 +68,13 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
             @Override
             protected void configure() {
                 bind(String.class).annotatedWith(Names.named("Connection String")).toInstance(CONNECTION_STRING);
+                bind(String.class).annotatedWith(Names.named("Input Dir")).toInstance(IN_DIRECTORY);
+                bind(String.class).annotatedWith(Names.named("Output Dir")).toInstance(OUT_DIRECTORY);
+                bind(String.class).annotatedWith(Names.named("Errors Dir")).toInstance(ERRORS_DIRECTORY);
             }
         });
+
+        pgnDirectoryProcessor = injector.getInstance(PgnDirectoryProcessor.class);
     }
 
     private void load(String fileName) throws FileNotFoundException, InterruptedException, ExecutionException {
@@ -63,7 +90,7 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         try {
             createServiceAndDependencies();
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
 
         return new Application() {
@@ -87,9 +114,9 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         Response response = target("game/pgn").request().post(Entity.text(pgn));
         assertThat(response.getStatus(), equalTo(Status.CREATED.getStatusCode()));
 
-        String url = response.readEntity(GameList.class).games.get(0);
+        String url = response.getLocation().getPath();
         String result = target(url).request().get(String.class);
-        assertThat(result, equalTo(pgn.trim()));
+        assertThat(result.trim(), equalTo(pgn.trim()));
     }
 
     @Test
@@ -110,14 +137,14 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     @Test
     public void testThat6RuyLopezPositionsAreFoundFromDatabase() throws IOException {
         // setup
-        String pgn = FileUtils.readFileToString(new File("src/integration/resources/shamkir.pgn"));
+        FileUtils.copyFileToDirectory(new File("src/integration/resources/shamkir.pgn"), new File(IN_DIRECTORY));
         String encodedPosition = URLEncoder.encode("r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R", "UTF-8");
 
         // act
-        target("game/pgn").request().post(Entity.text(pgn));
-        GameList gameList = target("game/position/" + encodedPosition).request().get(GameList.class);
+        pgnDirectoryProcessor.run();
 
         // verify
+        GameList gameList = target("game/position/" + encodedPosition).request().get(GameList.class);
         assertThat(gameList.games.size(), equalTo(6));
     }
 

@@ -10,9 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,20 +32,7 @@ public class PGNParser {
         this.moveFactory = moveFactory;
     }
 
-    public Map<String, Game> parseMultiGamePGN(String pgnText) {
-        Map<String, Game> games = new HashMap<>();
-        String[] pgnGames = MULTI_GAME_SPLITTER_PATTERN.split(pgnText);
-        for (String pgnGame : pgnGames) {
-            if (!pgnGame.startsWith("["))
-                pgnGame = "[" + pgnGame;
-
-            games.put(pgnGame.trim(), parseSingleGamePGN(pgnGame));
-        }
-
-        return games;
-    }
-
-    public Game parseSingleGamePGN(String pgnText) {
+    public Game parsePGN(String pgnText) {
         logger.debug("Parsing PGN: {}", pgnText);
 
         Game game = createNewGame();

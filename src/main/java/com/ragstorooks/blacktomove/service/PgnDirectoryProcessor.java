@@ -11,10 +11,14 @@ import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.util.regex.Pattern;
 
 @Singleton
 public class PgnDirectoryProcessor implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(PgnDirectoryProcessor.class);
+
+    private static final String MULTI_GAME_SPLITTER = "^\\s*$[\\r\\n]+^\\[";
+    private static final Pattern MULTI_GAME_SPLITTER_PATTERN = Pattern.compile(MULTI_GAME_SPLITTER, Pattern.MULTILINE);
 
     private File inDirectory;
     private File outDirectory;
@@ -41,16 +45,29 @@ public class PgnDirectoryProcessor implements Runnable {
     public void run() {
         File[] fileList = inDirectory.listFiles();
         for (File file : fileList) {
-            logger.info("Processing file {} and saving into the database", file);
             try {
                 String fileContents = FileUtils.readFileToString(file, Charset.forName("UTF-8"));
-                Response response = chessDatabaseService.saveGamesWithPgn(fileContents);
-                if (response.getStatus() == Response.Status.CREATED.getStatusCode()) {
-                    logger.info("Processed all games in file {}", file);
-                    FileUtils.moveFileToDirectory(file, outDirectory, false);
-                } else {
-                    logger.warn("Couldn't save all games in file {}, response status {}", file, response.getStatus());
+
+                String[] pgnGames = MULTI_GAME_SPLITTER_PATTERN.split(fileContents);
+                logger.info("Processing file {}, which has {} games", file, pgnGames.length);
+
+                int errorCount = 0;
+                for (String pgnGame : pgnGames) {
+                    pgnGame = pgnGame.trim();
+                    if (!pgnGame.startsWith("["))
+                        pgnGame = "[" + pgnGame;
+
+                    Response response = chessDatabaseService.savePgn(pgnGame);
+                    if (!(response.getStatus() == Response.Status.CREATED.getStatusCode()))
+                        errorCount++;
+                }
+
+                if (errorCount > 0) {
+                    logger.warn("Couldn't save {} games in file {}", errorCount, file);
                     FileUtils.moveFileToDirectory(file, errorsDirectory, false);
+                } else {
+                    logger.info("Processed all {} games in file {}", pgnGames.length, file);
+                    FileUtils.moveFileToDirectory(file, outDirectory, false);
                 }
             } catch (IOException e) {
                 logger.error("Unable to read file " + file + ", skipping...", e);

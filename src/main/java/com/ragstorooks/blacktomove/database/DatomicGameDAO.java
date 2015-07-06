@@ -57,7 +57,6 @@ public class DatomicGameDAO implements GameDAO {
 
         Map<Object, Object> transactionData = connection.transact(saveGameTransaction).get();
         Map<Object, String> tempIds = (Map<Object, String>) transactionData.get(createDatabaseKeyFor("tempids"));
-        System.out.println("gameTempId = " + gameTempId);
 
         Long gameId = (Long) Peer.resolveTempid(connection.db(), tempIds, gameTempId);
 

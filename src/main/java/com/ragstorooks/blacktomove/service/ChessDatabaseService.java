@@ -17,6 +17,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -41,24 +42,18 @@ public class ChessDatabaseService {
     @POST
     @Path("/pgn")
     @Consumes(MediaType.TEXT_PLAIN)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response saveGamesWithPgn(String pgn) {
-        logger.info("Parsing pgn and saving games");
-        List<String> gameIds = new ArrayList<>();
-        Map<String, com.ragstorooks.blacktomove.chess.Game> games = pgnParser.parseMultiGamePGN(pgn);
-        games.entrySet().stream().forEach(game -> {
-            try {
-                Long gameId = gameDAO.saveGame(convertToDatabaseObject(game.getKey(), game.getValue()));
-                gameIds.add("game/id/" + gameId);
-            } catch (ExecutionException e) {
-                logger.error(ERROR_MESSAGE, e);
-            } catch (InterruptedException e) {
-                logger.error(ERROR_MESSAGE, e);
-            }
-        });
+    public Response savePgn(String pgn) {
+        logger.info("Parsing pgn and saving game");
+        try {
+            Long gameId = gameDAO.saveGame(convertToDatabaseObject(pgn, pgnParser.parsePGN(pgn)));
+            return Response.created(URI.create("game/id/" + gameId)).build();
+        } catch (ExecutionException e) {
+            logger.error(ERROR_MESSAGE, e);
+        } catch (InterruptedException e) {
+            logger.error(ERROR_MESSAGE, e);
+        }
 
-        GameList gameList = new GameList(gameIds);
-        return Response.ok(gameList).status(Response.Status.CREATED).build();
+        return Response.serverError().build();
     }
 
     @GET
