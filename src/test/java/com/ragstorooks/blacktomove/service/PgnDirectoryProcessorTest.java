@@ -56,7 +56,7 @@ public class PgnDirectoryProcessorTest {
     }
 
     @Before
-    public void setupChessDatabaseService() {
+    public void setupChessDatabaseService() throws Exception {
         when(chessDatabaseService.savePgn(pgn1)).thenReturn(Response.created(null).build());
         when(chessDatabaseService.savePgn(pgn2)).thenReturn(Response.created(null).build());
         when(chessDatabaseService.savePgn(pgn3)).thenReturn(Response.created(null).build());
@@ -76,7 +76,7 @@ public class PgnDirectoryProcessorTest {
     }
 
     @Test
-    public void testThatAllFilesWithinInDirectoryAreSavedViaTheChessDatabaseService() throws IOException {
+    public void testThatAllFilesWithinInDirectoryAreSavedViaTheChessDatabaseService() throws Exception {
         // act
         pgnDirectoryProcessor.run();
 
@@ -94,7 +94,7 @@ public class PgnDirectoryProcessorTest {
     }
 
     @Test
-    public void testThatAllFilesWithinInDirectoryAreMovedToOutDirectory() throws IOException {
+    public void testThatAllFilesWithinInDirectoryAreMovedToOutDirectory() throws Exception {
         // act
         pgnDirectoryProcessor.run();
 
@@ -108,7 +108,7 @@ public class PgnDirectoryProcessorTest {
     }
 
     @Test
-    public void testThatOnlyFilesWithNoErrorsAreMovedToOutDirectory() throws IOException {
+    public void testThatOnlyFilesWithNoErrorsAreMovedToOutDirectory() throws Exception {
         // setup
         when(chessDatabaseService.savePgn(pgn2)).thenReturn(Response.serverError().build());
 
@@ -125,7 +125,7 @@ public class PgnDirectoryProcessorTest {
     }
 
     @Test
-    public void testThatFilesWithErrorsAreMovedToErrorsDirectory() throws IOException {
+    public void testThatFilesWithErrorsAreMovedToErrorsDirectory() throws Exception {
         // setup
         when(chessDatabaseService.savePgn(pgn2)).thenReturn(Response.serverError().build());
 
@@ -141,7 +141,7 @@ public class PgnDirectoryProcessorTest {
     }
 
     @Test
-    public void testThatMultipleGamesAreParsedAndProcessedFromASingleFile() throws IOException {
+    public void testThatMultipleGamesAreParsedAndProcessedFromASingleFile() throws Exception {
         // setup
         deleteFiles(inFile1, inFile2, inFile3);
 

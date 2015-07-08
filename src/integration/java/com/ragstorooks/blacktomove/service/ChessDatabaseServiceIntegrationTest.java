@@ -4,6 +4,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.google.inject.name.Names;
+import com.ragstorooks.blacktomove.aop.ExceptionHandlingModule;
 import com.ragstorooks.blacktomove.database.DatabaseModule;
 import datomic.Connection;
 import datomic.Peer;
@@ -64,7 +65,7 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         Peer.createDatabase(CONNECTION_STRING);
         load(SCHEMA_FILE);
 
-        injector = Guice.createInjector(new DatabaseModule(), new AbstractModule() {
+        injector = Guice.createInjector(new DatabaseModule(), new ExceptionHandlingModule(), new AbstractModule() {
             @Override
             protected void configure() {
                 bind(String.class).annotatedWith(Names.named("Connection String")).toInstance(CONNECTION_STRING);

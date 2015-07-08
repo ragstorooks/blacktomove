@@ -2,6 +2,7 @@ package com.ragstorooks.blacktomove.service;
 
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.ragstorooks.blacktomove.aop.ExceptionHandled;
 import com.ragstorooks.blacktomove.chess.PGNParser;
 import com.ragstorooks.blacktomove.database.Game;
 import com.ragstorooks.blacktomove.database.GameBuilder;
@@ -26,8 +27,6 @@ import java.util.concurrent.ExecutionException;
 @Singleton
 @Path("game")
 public class ChessDatabaseService {
-    private static final String ERROR_MESSAGE = "Unable to save game to database";
-
     private static final Logger logger = LoggerFactory.getLogger(PGNParser.class);
 
     private PGNParser pgnParser;
@@ -42,23 +41,18 @@ public class ChessDatabaseService {
     @POST
     @Path("/pgn")
     @Consumes(MediaType.TEXT_PLAIN)
-    public Response savePgn(String pgn) {
+    @ExceptionHandled
+    public Response savePgn(String pgn) throws ExecutionException, InterruptedException {
         logger.info("Parsing pgn and saving game");
-        try {
-            Long gameId = gameDAO.saveGame(convertToDatabaseObject(pgn, pgnParser.parsePGN(pgn)));
-            return Response.created(URI.create("game/id/" + gameId)).build();
-        } catch (ExecutionException e) {
-            logger.error(ERROR_MESSAGE, e);
-        } catch (InterruptedException e) {
-            logger.error(ERROR_MESSAGE, e);
-        }
 
-        return Response.serverError().build();
+        Long gameId = gameDAO.saveGame(convertToDatabaseObject(pgn, pgnParser.parsePGN(pgn)));
+        return Response.created(URI.create("game/id/" + gameId)).build();
     }
 
     @GET
     @Path("/position/{position}")
     @Produces(MediaType.APPLICATION_JSON)
+    @ExceptionHandled
     public GameList findGamesWithPosition(@PathParam("position") String position) {
         logger.info("Finding games with position {}", position);
         List<String> pgns = new ArrayList<>();
@@ -72,6 +66,7 @@ public class ChessDatabaseService {
     @GET
     @Path("/id/{id}")
     @Produces(MediaType.TEXT_PLAIN)
+    @ExceptionHandled
     public String findGameById(@PathParam("id") String id) {
         logger.info("Finding game with position {}", id);
 

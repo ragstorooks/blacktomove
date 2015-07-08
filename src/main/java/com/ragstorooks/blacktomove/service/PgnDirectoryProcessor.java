@@ -57,7 +57,12 @@ public class PgnDirectoryProcessor implements Runnable {
                     if (!pgnGame.startsWith("["))
                         pgnGame = "[" + pgnGame;
 
-                    Response response = chessDatabaseService.savePgn(pgnGame);
+                    Response response = null;
+                    try {
+                        response = chessDatabaseService.savePgn(pgnGame);
+                    } catch (Exception e) {
+                        logger.error("Unexpected expection, expected the aspect to handle it!", e);
+                    }
                     if (!(response.getStatus() == Response.Status.CREATED.getStatusCode()))
                         errorCount++;
                 }
