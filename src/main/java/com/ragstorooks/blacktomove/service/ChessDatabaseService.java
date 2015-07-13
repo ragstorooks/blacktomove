@@ -10,9 +10,7 @@ import com.ragstorooks.blacktomove.database.GameDAO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
-import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -38,9 +36,6 @@ public class ChessDatabaseService {
         this.gameDAO = gameDAO;
     }
 
-    @POST
-    @Path("/pgn")
-    @Consumes(MediaType.TEXT_PLAIN)
     @ExceptionHandled
     public Response savePgn(String pgn) throws ExecutionException, InterruptedException {
         logger.info("Parsing pgn and saving game");

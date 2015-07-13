@@ -16,7 +16,6 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -44,6 +43,7 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     private static final String SCHEMA_FILE = "src/main/resources/db/schema.edn";
     private static final String CONNECTION_STRING = "datomic:mem://blacktomove-integration";
 
+    private ChessDatabaseService chessDatabaseService;
     private PgnDirectoryProcessor pgnDirectoryProcessor;
     private Injector injector;
 
@@ -75,6 +75,7 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
             }
         });
 
+        chessDatabaseService = injector.getInstance(ChessDatabaseService.class);
         pgnDirectoryProcessor = injector.getInstance(PgnDirectoryProcessor.class);
     }
 
@@ -112,7 +113,7 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         String pgn = loadPgnForAnandNakamura();
 
         // save game & then find position
-        Response response = target("game/pgn").request().post(Entity.text(pgn));
+        Response response = chessDatabaseService.savePgn(pgn);
         assertThat(response.getStatus(), equalTo(Status.CREATED.getStatusCode()));
 
         String url = response.getLocation().getPath();
@@ -127,7 +128,7 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         String finalPosition = URLEncoder.encode("1R5Q/5p2/2p1p1kb/2PpP2p/3Pq1pP/6P1/5P1K/8", "UTF-8");
 
         // save game & then find position
-        target("game/pgn").request().post(Entity.text(pgn));
+        chessDatabaseService.savePgn(pgn);
         GameList gameList = target("game/position/" + finalPosition).request().get(GameList.class);
 
         // verify
