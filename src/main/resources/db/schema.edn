@@ -100,6 +100,7 @@
  :db/ident :games/fullPgn
  :db/valueType :db.type/string
  :db/cardinality :db.cardinality/one
+ :db/unique :db.unique/value
  :db/doc "The entire PGN for the game"
  :db.install/_attribute :db.part/db}
 

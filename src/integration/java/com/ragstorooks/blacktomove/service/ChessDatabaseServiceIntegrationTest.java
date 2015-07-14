@@ -112,26 +112,17 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         // setup
         String pgn = loadPgnForAnandNakamura();
 
-        // save game & then find position
+        // save game & then search by returned url
         Response response = chessDatabaseService.savePgn(pgn);
         assertThat(response.getStatus(), equalTo(Status.CREATED.getStatusCode()));
 
         String url = response.getLocation().getPath();
         String result = target(url).request().get(String.class);
         assertThat(result.trim(), equalTo(pgn.trim()));
-    }
 
-    @Test
-    public void testThatASingleGameIsSavedIntoTheDatabaseAndSearchableByPosition() throws   Exception {
-        // setup
-        String pgn = loadPgnForAnandNakamura();
+        // search by position
         String finalPosition = URLEncoder.encode("1R5Q/5p2/2p1p1kb/2PpP2p/3Pq1pP/6P1/5P1K/8", "UTF-8");
-
-        // save game & then find position
-        chessDatabaseService.savePgn(pgn);
         GameList gameList = target("game/position/" + finalPosition).request().get(GameList.class);
-
-        // verify
         assertThat(gameList.games.size(), equalTo(1));
         assertTrue(gameList.games.get(0).contains("Anand") && gameList.games.get(0).contains("Nakamura"));
     }

@@ -22,6 +22,8 @@ import static java.util.Collections.sort;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class DatomicGameDAOTest {
     private static final String CONNECTION_STRING = "datomic:mem://blacktomove";
@@ -100,6 +102,21 @@ public class DatomicGameDAOTest {
 
         assertThat(gameEntity.get(":games/fullPgn"), equalTo(FULL_PGN));
         assertThat(gameEntity.get(":db/id"), equalTo(result));
+    }
+
+    @Test
+    public void saveGameShouldFailForDuplicatePgn() throws ExecutionException, InterruptedException {
+        // setup
+        Long result = datomicGameDAO.saveGame(game);
+        assertNotNull(result);
+
+        // act
+        try {
+            datomicGameDAO.saveGame(game);
+            fail("Expected an exception for duplicate pgn");
+        } catch(ExecutionException e) {
+            assertTrue(e.getCause() instanceof IllegalStateException);
+        }
     }
 
     @Test
