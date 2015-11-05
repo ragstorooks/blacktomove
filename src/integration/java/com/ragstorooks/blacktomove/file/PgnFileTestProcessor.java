@@ -3,7 +3,6 @@ package com.ragstorooks.blacktomove.file;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import com.google.inject.name.Named;
-import com.ragstorooks.blacktomove.file.PgnFileProcessor;
 import com.ragstorooks.blacktomove.service.ChessDatabaseService;
 
 import java.io.File;
