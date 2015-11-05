@@ -1,5 +1,7 @@
-package com.ragstorooks.blacktomove.service;
+package com.ragstorooks.blacktomove.file;
 
+import com.ragstorooks.blacktomove.file.PgnFileProcessor;
+import com.ragstorooks.blacktomove.service.ChessDatabaseService;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
@@ -19,7 +21,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class PgnDirectoryProcessorTest {
+public class PgnFileProcessorTest {
     private static final String TMP_DIRECTORY = System.getProperty("java.io.tmpdir") + File.separator;
     private static final String IN_DIRECTORY = TMP_DIRECTORY + "in-processor";
     private static final String OUT_DIRECTORY = TMP_DIRECTORY + "out-processor";
@@ -39,7 +41,7 @@ public class PgnDirectoryProcessorTest {
 
     @Mock
     private ChessDatabaseService chessDatabaseService;
-    private PgnDirectoryProcessor pgnDirectoryProcessor;
+    private PgnFileProcessor pgnFileProcessor;
 
     private void setupInAndOutDirectories() throws IOException {
         FileUtils.forceMkdir(new File(IN_DIRECTORY));
@@ -65,7 +67,7 @@ public class PgnDirectoryProcessorTest {
     @Before
     public void setup() throws IOException {
         setupInAndOutDirectories();
-        pgnDirectoryProcessor = new PgnDirectoryProcessor(IN_DIRECTORY, OUT_DIRECTORY, ERRORS_DIRECTORY, chessDatabaseService);
+        pgnFileProcessor = new PgnFileProcessor(OUT_DIRECTORY, ERRORS_DIRECTORY, chessDatabaseService);
     }
 
     @After
@@ -78,7 +80,9 @@ public class PgnDirectoryProcessorTest {
     @Test
     public void testThatAllFilesWithinInDirectoryAreSavedViaTheChessDatabaseService() throws Exception {
         // act
-        pgnDirectoryProcessor.run();
+        pgnFileProcessor.parse(inFile1);
+        pgnFileProcessor.parse(inFile2);
+        pgnFileProcessor.parse(inFile3);
 
         // assert
         verify(chessDatabaseService).savePgn(pgn1);
@@ -96,7 +100,9 @@ public class PgnDirectoryProcessorTest {
     @Test
     public void testThatAllFilesWithinInDirectoryAreMovedToOutDirectory() throws Exception {
         // act
-        pgnDirectoryProcessor.run();
+        pgnFileProcessor.parse(inFile1);
+        pgnFileProcessor.parse(inFile2);
+        pgnFileProcessor.parse(inFile3);
 
         // assert
         assertFalse(inFile1.exists());
@@ -113,7 +119,9 @@ public class PgnDirectoryProcessorTest {
         when(chessDatabaseService.savePgn(pgn2)).thenReturn(Response.serverError().build());
 
         // act
-        pgnDirectoryProcessor.run();
+        pgnFileProcessor.parse(inFile1);
+        pgnFileProcessor.parse(inFile2);
+        pgnFileProcessor.parse(inFile3);
 
         // assert
         assertFalse(inFile1.exists());
@@ -130,7 +138,9 @@ public class PgnDirectoryProcessorTest {
         when(chessDatabaseService.savePgn(pgn2)).thenReturn(Response.serverError().build());
 
         // act
-        pgnDirectoryProcessor.run();
+        pgnFileProcessor.parse(inFile1);
+        pgnFileProcessor.parse(inFile2);
+        pgnFileProcessor.parse(inFile3);
 
         // assert
         assertFalse(inFile2.exists());
@@ -150,7 +160,7 @@ public class PgnDirectoryProcessorTest {
         FileUtils.write(multiGameFile, multiGamePgn);
 
         // act
-        pgnDirectoryProcessor.run();
+        pgnFileProcessor.parse(multiGameFile);
 
         // assert
         verify(chessDatabaseService).savePgn(pgn1);

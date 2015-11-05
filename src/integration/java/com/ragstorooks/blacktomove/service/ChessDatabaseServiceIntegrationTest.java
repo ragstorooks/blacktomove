@@ -6,29 +6,28 @@ import com.google.inject.Injector;
 import com.google.inject.name.Names;
 import com.ragstorooks.blacktomove.aop.ExceptionHandlingModule;
 import com.ragstorooks.blacktomove.database.DatabaseModule;
+import com.ragstorooks.blacktomove.file.NewFileListener;
+import com.ragstorooks.blacktomove.file.PgnFileProcessor;
+import com.ragstorooks.blacktomove.file.PgnFileTestProcessor;
 import datomic.Connection;
 import datomic.Peer;
 import datomic.Util;
 import org.apache.commons.io.FileUtils;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.test.JerseyTest;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.Reader;
+import java.io.*;
 import java.net.URLEncoder;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -43,8 +42,10 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     private static final String SCHEMA_FILE = "src/main/resources/db/schema.edn";
     private static final String CONNECTION_STRING = "datomic:mem://blacktomove-integration";
 
+    private CountDownLatch countDownLatch;
+    private Thread thread;
+
     private ChessDatabaseService chessDatabaseService;
-    private PgnDirectoryProcessor pgnDirectoryProcessor;
     private Injector injector;
 
     @BeforeClass
@@ -72,11 +73,12 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
                 bind(String.class).annotatedWith(Names.named("Input Dir")).toInstance(IN_DIRECTORY);
                 bind(String.class).annotatedWith(Names.named("Output Dir")).toInstance(OUT_DIRECTORY);
                 bind(String.class).annotatedWith(Names.named("Errors Dir")).toInstance(ERRORS_DIRECTORY);
+
+                bind(PgnFileProcessor.class).to(PgnFileTestProcessor.class);
             }
         });
 
         chessDatabaseService = injector.getInstance(ChessDatabaseService.class);
-        pgnDirectoryProcessor = injector.getInstance(PgnDirectoryProcessor.class);
     }
 
     private void load(String fileName) throws FileNotFoundException, InterruptedException, ExecutionException {
@@ -107,6 +109,20 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         };
     }
 
+    @Before
+    public void setupFileListener() {
+        thread = new Thread(injector.getInstance(NewFileListener.class));
+        thread.start();
+
+        countDownLatch = new CountDownLatch(1);
+        ((PgnFileTestProcessor)injector.getInstance(PgnFileProcessor.class)).setCountDownLatch(countDownLatch);
+    }
+
+    @After
+    public void killFileListenerThread() {
+        thread.interrupt();
+    }
+
     @Test
     public void testThatASingleGameIsSavedIntoTheDatabaseAndTheRightUrlIsReturned() throws Exception {
         // setup
@@ -128,13 +144,12 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
     }
 
     @Test
-    public void testThat6RuyLopezPositionsAreFoundFromDatabase() throws IOException {
+    public void testThat6RuyLopezPositionsAreFoundFromDatabase() throws Exception {
         // setup
         FileUtils.copyFileToDirectory(new File("src/integration/resources/shamkir.pgn"), new File(IN_DIRECTORY));
         String encodedPosition = URLEncoder.encode("r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R", "UTF-8");
 
-        // act
-        pgnDirectoryProcessor.run();
+        assertTrue(countDownLatch.await(10, TimeUnit.SECONDS));
 
         // verify
         GameList gameList = target("game/position/" + encodedPosition).request().get(GameList.class);
