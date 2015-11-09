@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.junit.Assert.assertThat;
@@ -141,19 +140,6 @@ public class ChessDatabaseServiceIntegrationTest extends JerseyTest {
         GameList gameList = target("game/position/" + finalPosition).request().get(GameList.class);
         assertThat(gameList.games.size(), equalTo(1));
         assertTrue(gameList.games.get(0).contains("Anand") && gameList.games.get(0).contains("Nakamura"));
-    }
-
-    @Test
-    public void testThat6RuyLopezPositionsAreFoundFromDatabase() throws Exception {
-        // setup
-        FileUtils.copyFileToDirectory(new File("src/integration/resources/shamkir.pgn"), new File(IN_DIRECTORY));
-        String encodedPosition = URLEncoder.encode("r1bqkbnr/pppp1ppp/2n5/1B2p3/4P3/5N2/PPPP1PPP/RNBQK2R", "UTF-8");
-
-        assertTrue(countDownLatch.await(10, TimeUnit.SECONDS));
-
-        // verify
-        GameList gameList = target("game/position/" + encodedPosition).request().get(GameList.class);
-        assertThat(gameList.games.size(), equalTo(6));
     }
 
     private String loadPgnForAnandNakamura() {
