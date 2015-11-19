@@ -52,7 +52,7 @@ public class NewFileListenerTest {
         FileUtils.writeStringToFile(file, "just some test");
 
         // verify
-        countDownLatch.await(1, TimeUnit.SECONDS);
+        countDownLatch.await(10, TimeUnit.SECONDS);
         verify(pgnFileProcessor).parse(file);
     }
 }
